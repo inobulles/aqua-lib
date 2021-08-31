@@ -8,6 +8,8 @@
 static device_t vga_device = -1;
 
 typedef struct {
+	uint64_t id;
+
 	uint64_t text;
 
 	uint64_t width, height;
