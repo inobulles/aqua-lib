@@ -3,7 +3,7 @@
 
 #include <root.h>
 
-device_t time_device = -1;
+static device_t time_device = -1;
 
 uint64_t get_unix_time(void) {
 	if (time_device == -1) {
