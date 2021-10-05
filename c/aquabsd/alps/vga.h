@@ -44,4 +44,8 @@ int vga_init(void) {
 	return vga_get_mode_count() == -1 ? -1 : 0;
 }
 
+int vga_reset(void) {
+	return (int) send_device(vga_device, 0x7672, NULL);
+}
+
 #endif
