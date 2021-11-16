@@ -3,10 +3,10 @@
 
 #include <root.h>
 
-#include <aquabsd/alps/win.h>
+#include "gl/gl.h"
 
 typedef enum {
-	OGL_CONTEXT_TARGET_WINDOW,
+	OGL_CONTEXT_TARGET_WIN,
 	OGL_CONTEXT_TARGET_WM,
 	OGL_CONTEXT_TARGET_LEN
 } ogl_context_target_t;
@@ -15,14 +15,18 @@ typedef struct {
 	ogl_context_target_t target_type;
 
 	union {
+#if defined(__AQUA_LIB__AQUABSD_ALPS_WIN)
 		win_t* win;
+#endif
 	} target;
 
 	uint64_t context;
+	gl_funcs_t gl;
 } ogl_context_t;
 
 static device_t ogl_device = -1;
 
+#if defined(__AQUA_LIB__AQUABSD_ALPS_WIN)
 ogl_context_t* ogl_create_win_context(unsigned x_res, unsigned y_res) {
 	if (ogl_device == -1) {
 		ogl_device = query_device("aquabsd.alps.ogl");
@@ -43,7 +47,7 @@ ogl_context_t* ogl_create_win_context(unsigned x_res, unsigned y_res) {
 	ogl_context_t* context = calloc(1, sizeof *context);
 	context->target.win = win;
 
-	context->context = send_device(ogl_device, 0x6363, (uint64_t[]) { OGL_CONTEXT_TARGET_WINDOW, win->win });
+	context->context = send_device(ogl_device, 0x6363, (uint64_t[]) { OGL_CONTEXT_TARGET_WIN, win->win });
 
 	if (!context->context) { // failed to create OpenGL context
 		free(context);
@@ -56,11 +60,16 @@ ogl_context_t* ogl_create_win_context(unsigned x_res, unsigned y_res) {
 void* ogl_get_function(ogl_context_t* context, const char* name) {
 	return (void*) send_device(ogl_device, 0x6766, (uint64_t[]) { context->context, (uint64_t) name });
 }
+#endif
+
+#define OGL_REQUIRE(context, name) (context)->gl.name = ogl_get_function((context), "gl"#name);
 
 void ogl_delete_context(ogl_context_t* context) {
 	send_device(ogl_device, 0x6463, (uint64_t[]) { context->context });
 
-	if (context->target_type == OGL_CONTEXT_TARGET_WINDOW) win_delete(context->target.win);
+#if defined(__AQUA_LIB__AQUABSD_ALPS_WIN)
+	if (context->target_type == OGL_CONTEXT_TARGET_WIN) win_delete(context->target.win);
+#endif
 
 	free(context);
 }
