@@ -77,15 +77,31 @@ def parse_types(types):
 
 		comment(_type)
 
-def parse_enums(enums):
-	global header
+known_groups = []
 
-	header += "typedef enum {\n"
+def parse_enums(enums):
+	global header, known_groups
+
+	count = 0
 
 	for enum in enums:
 		if enum.tag == "unused":
-			continue
+			return
 
+		count += enum.tag == "enum"
+
+	if not count:
+		header += "/* empty enum */"
+		comment(enums)
+
+		return
+
+	if "group" in enums.attrib:
+		header += "typedef "
+
+	header += "enum {\n"
+
+	for enum in enums:
 		if enum.tag != "enum":
 			print(f"WARNING Non-enum {enum.tag} in enums")
 			continue
@@ -98,6 +114,8 @@ def parse_enums(enums):
 
 	if "group" in enums.attrib:
 		group = enums.attrib["group"]
+
+		known_groups.append(group)
 		header += f"}} {enum_type(group)};"
 
 	else:
@@ -106,7 +124,7 @@ def parse_enums(enums):
 	comment(enums)
 
 def parse_funcs(funcs):
-	global header
+	global header, known_groups
 
 	header += "typedef struct {\n"
 
@@ -135,19 +153,26 @@ def parse_funcs(funcs):
 
 			header += to_str(bit.text) + to_str(bit.tail)
 
+		first = True
+
 		for param in func[1:]:
 			if param.tag != "param":
 				continue
 
+			if not first:
+				header += ", "
+
+			first = False
+
+			header += to_str(param.text)
+
 			for bit in param:
 				text = to_str(bit.text)
 
-				if bit.tag == "ptype" and text == "GLenum" and "group" in param.attrib:
+				if bit.tag == "ptype" and text == "GLenum" and "group" in param.attrib and param.attrib["group"] in known_groups:
 					text = enum_type(param.attrib["group"])
 
 				header += text + to_str(bit.tail)
-
-			header += ", "
 
 		header += ");\n"
 
