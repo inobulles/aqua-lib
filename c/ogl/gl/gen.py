@@ -85,9 +85,6 @@ def parse_enums(enums):
 	count = 0
 
 	for enum in enums:
-		if enum.tag == "unused":
-			return
-
 		count += enum.tag == "enum"
 
 	if not count:
@@ -102,9 +99,16 @@ def parse_enums(enums):
 	header += "enum {\n"
 
 	for enum in enums:
+		if enum.tag == "unused":
+			comment(enum)
+			continue
+
 		if enum.tag != "enum":
 			print(f"WARNING Non-enum {enum.tag} in enums")
 			continue
+
+		if "api" in enum.attrib and enum.attrib["api"] != "gl":
+			continue # this is only to fix the redeclaration of GL_ACTIVE_PROGRAM_EXT, which may be a bug in the OpenGL registry tbh
 
 		name = enum.attrib["name"]
 		value = enum.attrib["value"]
