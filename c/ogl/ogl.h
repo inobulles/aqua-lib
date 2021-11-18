@@ -26,6 +26,10 @@ typedef struct {
 
 static device_t ogl_device = -1;
 
+static void ogl_func_not_loaded(ogl_context_t* context) {
+	fprintf(stderr, "[OGL library] Context %p: function not yet loaded. Use 'OGL_REQUIRE'.\n", context);
+}
+
 #if defined(__AQUA_LIB__AQUABSD_ALPS_WIN)
 ogl_context_t* ogl_create_win_context(unsigned x_res, unsigned y_res) {
 	if (ogl_device == -1) {
@@ -52,6 +56,10 @@ ogl_context_t* ogl_create_win_context(unsigned x_res, unsigned y_res) {
 	if (!context->context) { // failed to create OpenGL context
 		free(context);
 		return NULL;
+	}
+
+	for (int i = 0; i < sizeof(context->gl) / sizeof(context->gl.Accum); i++) {
+		((void**) &context->gl)[i] = ogl_func_not_loaded;
 	}
 
 	return context;
