@@ -27,7 +27,7 @@ typedef struct {
 static device_t ogl_device = -1;
 
 static void ogl_func_not_loaded(void) {
-	fprintf(stderr, "[OGL library] Function not yet loaded. Use 'OGL_REQUIRE'.\n");
+	fprintf(stderr, "[OGL lib] Function not yet loaded. Use 'OGL_REQUIRE'.\n");
 }
 
 #if defined(__AQUA_LIB__AQUABSD_ALPS_WIN)

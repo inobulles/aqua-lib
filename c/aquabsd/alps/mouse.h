@@ -5,19 +5,20 @@
 
 // TODO error handling
 
-#define MOUSE_BUTTON_COUNT 3
-#define MOUSE_AXIS_COUNT 3
-
 typedef enum {
 	MOUSE_BUTTON_LEFT,
 	MOUSE_BUTTON_RIGHT,
 	MOUSE_BUTTON_MIDDLE,
+
+	MOUSE_BUTTON_LEN
 } mouse_button_t;
 
 typedef enum {
 	MOUSE_AXIS_X,
 	MOUSE_AXIS_Y,
 	MOUSE_AXIS_Z, // also known as the 'SCROLL' axis
+
+	MOUSE_AXIS_LEN
 } mouse_axis_t;
 
 static device_t mouse_device = -1;

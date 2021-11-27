@@ -5,8 +5,6 @@
 
 // TODO error handling
 
-#define KBD_BUTTON_COUNT 5
-
 typedef enum {
 	KBD_BUTTON_ESC,
 
@@ -14,6 +12,8 @@ typedef enum {
 	KBD_BUTTON_DOWN,
 	KBD_BUTTON_LEFT,
 	KBD_BUTTON_RIGHT,
+
+	KBD_BUTTON_LEN
 } kbd_button_t;
 
 static device_t kbd_device = -1;
@@ -33,6 +33,14 @@ int kbd_update(kbd_t kbd) {
 
 unsigned kbd_poll_button(kbd_t kbd, kbd_button_t button) {
 	return send_device(kbd_device, 0x7062, (uint64_t[]) { kbd, button });
+}
+
+unsigned kbd_buf_len(kbd_t kbd) {
+	return send_device(kbd_device, 0x626C, (uint64_t[]) { kbd });
+}
+
+int kbd_read_buf(kbd_t kbd, char* buf) { // expecting 'buf' to be 'kbd_buf_len(kbd)' wide
+	return send_device(kbd_device, 0x7262, (uint64_t[]) { kbd, (uint64_t) buf });
 }
 
 #endif
