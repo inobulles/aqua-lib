@@ -16,15 +16,23 @@ typedef struct {
 
 device_t win_device = -1;
 
-win_t* win_create(unsigned x_res, unsigned y_res) {
+int win_init(void) {
 	if (win_device == -1) {
 		win_device = query_device("aquabsd.alps.win");
 	}
 
 	if (win_device == -1) { // failed to query device
-		return NULL;
+		return -1;
 	}
 
+	return 0;
+}
+
+win_t* win_create(unsigned x_res, unsigned y_res) {
+	if (win_init() < 0) {
+		return NULL;
+	}
+	
 	win_t* win = calloc(1, sizeof *win);
 
 	win->x_res = x_res;
