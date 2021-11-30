@@ -65,4 +65,13 @@ int wm_register_cb(wm_t wm, wm_cb_t type, int (*cb) (uint64_t wm, uint64_t win, 
 	return send_device(wm_device, 0x7263, (uint64_t[]) {wm, type, (uint64_t) cb, (uint64_t) param});
 }
 
+win_t* wm_get_overlay(wm_t wm) {
+	uint64_t _win = send_device(wm_device, 0x6F77, (uint64_t[]) { wm });
+	
+	win_t* win = wm_get_root(wm); // base ourselves off the root window
+	win->win = _win;
+
+	return win;
+}
+
 #endif
