@@ -73,6 +73,10 @@ void win_sync(win_t* win) {
 	win->y_res = send_device(win_device, 0x7972, (uint64_t[]) { win->win });
 }
 
+void win_grab_focus(win_t* win) {
+	send_device(win_device, 0x6667, (uint64_t[]) { win->win });
+}
+
 void win_delete(win_t* win) {
 	send_device(win_device, 0x6463, (uint64_t[]) { win->win });
 	free(win);
