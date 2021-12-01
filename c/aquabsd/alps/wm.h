@@ -63,6 +63,10 @@ win_t* wm_get_root(wm_t wm) {
 	return win;
 }
 
+void wm_set_name(wm_t wm, const char* name) {
+	send_device(wm_device, 0x736E, (uint64_t[]) { wm, (uint64_t) name });
+}
+
 int wm_register_cb(wm_t wm, wm_cb_t type, int (*cb) (uint64_t wm, uint64_t win, uint64_t param), void* param) {
 	return send_device(wm_device, 0x7263, (uint64_t[]) {wm, type, (uint64_t) cb, (uint64_t) param});
 }
