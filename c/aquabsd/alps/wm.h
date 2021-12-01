@@ -5,6 +5,8 @@
 
 typedef enum {
 	WM_CB_CREATE,
+	WM_CB_SHOW,
+	WM_CB_HIDE,
 	WM_CB_MODIFY,
 	WM_CB_DELETE,
 	WM_CB_LEN
