@@ -53,6 +53,10 @@ void win_set_caption(win_t* win, const char* caption) {
 	send_device(win_device, 0x7363, (uint64_t[]) { win->win, (uint64_t) caption });
 }
 
+char* win_get_caption(win_t* win) {
+	return (char*) send_device(win_device, 0x6763, (uint64_t[]) { win->win });
+}
+
 int win_register_cb(win_t* win, win_cb_t type, int (*cb) (uint64_t context, uint64_t param), void* param) {
 	return send_device(win_device, 0x7263, (uint64_t[]) { win->win, type, (uint64_t) cb, (uint64_t) param });
 }
