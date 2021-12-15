@@ -40,4 +40,12 @@ uint64_t send_device(device_t device, uint16_t command, void* data) {
 	return kos_send_device(0, device, (uint64_t) command, (uint64_t) data);
 }
 
+// entry symbol
+
+int main(void);
+
+int __native_entry(void) {
+	return main();
+}
+
 #endif
