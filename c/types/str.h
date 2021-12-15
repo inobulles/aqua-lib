@@ -45,7 +45,7 @@ static void str_del(str_t* str) {
 
 static unsigned str_eq(str_t* x, str_t* y) {
 	if (y->obj.type != &str_type) {
-		return 0;
+		return 0; // comparing to invalid type
 	}
 
 	return strcmp(x->cstr, y->cstr) == 0;
@@ -53,7 +53,7 @@ static unsigned str_eq(str_t* x, str_t* y) {
 
 static str_t* str_add(str_t* x, str_t* y) {
 	if (y->obj.type != &str_type) {
-		return NULL;
+		return NULL; // adding invalid type
 	}
 
 	str_t* str = calloc(1, sizeof *str);
@@ -64,6 +64,26 @@ static str_t* str_add(str_t* x, str_t* y) {
 
 	memcpy(str->cstr, x->cstr, x->len);
 	memcpy(str->cstr + x->len, y->cstr, y->len);
+
+	str->cstr[str->len] = 0;
+
+	return str;
+}
+
+static str_t* str_mul(str_t* x, int64_t fac) {
+	if (fac < 0) {
+		return NULL; // cannot multiply a string a negative amount of times
+	}
+
+	str_t* str = calloc(1, sizeof *str);
+	str->obj.type = &str_type;
+
+	str->len = x->len * fac;
+	str->cstr = malloc(str->len + 1);
+
+	for (int i = 0; i < fac; i++) {
+		memcpy(str->cstr + x->len * i, x->cstr, x->len);
+	}
 
 	str->cstr[str->len] = 0;
 
@@ -84,6 +104,7 @@ static type_t str_type = {
 
 	.eq = (void*) str_eq,
 	.add = (void*) str_add,
+	.mul = (void*) str_mul,
 };
 
 #endif
