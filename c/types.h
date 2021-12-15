@@ -18,6 +18,7 @@ struct type_t {
 	// binary operators
 	
 	unsigned (*eq) ();
+	unsigned (*add) ();
 };
 
 #define TYPE_OP_ERROR fprintf(stderr, "[TYPES] ERROR '%s' does not have a %s operator\n", x->type->name, __func__);
@@ -58,6 +59,11 @@ static void del(void* _x) {
 static unsigned eq(object_t* _x, object_t* _y) {
 	object_t* x = _x;
 	object_t* y = _y;
+
+	if (!x && !y) {
+		// two objects are equal if they're both NULL
+		return 1;
+	}
 
 	if (!x || !y) {
 		return 0;
