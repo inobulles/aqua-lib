@@ -44,11 +44,30 @@ static void str_del(str_t* str) {
 // binary operators
 
 static unsigned str_eq(str_t* x, str_t* y) {
-	if (y->obj.type != x->obj.type) {
+	if (y->obj.type != &str_type) {
 		return 0;
 	}
 
 	return strcmp(x->cstr, y->cstr) == 0;
+}
+
+static str_t* str_add(str_t* x, str_t* y) {
+	if (y->obj.type != &str_type) {
+		return NULL;
+	}
+
+	str_t* str = calloc(1, sizeof *str);
+	str->obj.type = &str_type;
+	
+	str->len = x->len + y->len;
+	str->cstr = malloc(str->len + 1);
+
+	memcpy(str->cstr, x->cstr, x->len);
+	memcpy(str->cstr + x->len, y->cstr, y->len);
+
+	str->cstr[str->len] = 0;
+
+	return str;
 }
 
 // type object itself
@@ -58,12 +77,13 @@ static type_t str_type = {
 	
 	// unary operators
 
-	.len = str_len,
-	.del = str_del,
+	.len = (void*) str_len,
+	.del = (void*) str_del,
 
 	// binary operators
 
-	.eq = str_eq,
+	.eq = (void*) str_eq,
+	.add = (void*) str_add,
 };
 
 #endif

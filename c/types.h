@@ -1,6 +1,8 @@
 #if !defined(__AQUA_LIB__TYPES)
 #define __AQUA_LIB__TYPES
 
+// TODO exception handling system (perhaps a global exception queue?)
+
 typedef struct type_t type_t; // forward declaration
 
 typedef struct {
@@ -12,16 +14,16 @@ struct type_t {
 
 	// unary operators
 
-	uint64_t (*len) ();
-	void (*del) ();
+	uint64_t (*len) (void* _x);
+	void (*del) (void* _x);
 
 	// binary operators
 	
-	unsigned (*eq) ();
-	unsigned (*add) ();
+	unsigned (*eq) (void* _x, void* _y);
+	void* (*add) (void* _x, void* _y);
 };
 
-#define TYPE_OP_ERROR fprintf(stderr, "[TYPES] ERROR '%s' does not have a %s operator\n", x->type->name, __func__);
+#define TYPE_OP_ERROR fprintf(stderr, "[TYPES] ERROR '%s' does not have a '%s' operator\n", x->type->name, __func__);
 
 // unary operator
 
@@ -56,7 +58,7 @@ static void del(void* _x) {
 
 // binary operators
 
-static unsigned eq(object_t* _x, object_t* _y) {
+static unsigned eq(void* _x, void* _y) {
 	object_t* x = _x;
 	object_t* y = _y;
 
@@ -75,6 +77,22 @@ static unsigned eq(object_t* _x, object_t* _y) {
 	}
 
 	return x->type->eq(x, y);
+}
+
+static void* add(void* _x, void* _y) {
+	object_t* x = _x;
+	object_t* y = _y;
+
+	if (!x || !y) {
+		return 0;
+	}
+
+	if (!x->type->add) {
+		TYPE_OP_ERROR
+		return 0;
+	}
+
+	return x->type->add(x, y);
 }
 
 #endif
