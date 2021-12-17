@@ -128,14 +128,39 @@ static stack_t* stack_mul(stack_t* x, int64_t fac) {
 
 // indexing operators
 
-static object_t* stack_iget(stack_t* x, int64_t index) {
+static inline int64_t stack_process_index(stack_t* x, int64_t index) {
 	index += x->len * (index < 0); // wrap negative values
 	
 	if (index < 0 || index >= x->len) {
-		return NULL; // index out of bounds
+		return -1; // index out of bounds
+	}
+
+	return index;
+}
+
+static object_t* stack_iget(stack_t* x, int64_t index) {
+	index = stack_process_index(x, index);
+
+	if (index < 0) {
+		return NULL; // invalid index
 	}
 
 	return x->elems[index];
+}
+
+static int stack_iset(stack_t* x, int64_t index, object_t* y) {
+	if (!y) {
+		return -1; // NULL can't be an element
+	}
+
+	index = stack_process_index(x, index);
+
+	if (index < 0) {
+		return -1; // invalid index
+	}
+
+	x->elems[index] = y;
+	return 0;
 }
 
 // list-like type operators
@@ -178,6 +203,7 @@ static type_t stack_type = {
 	// indexing operators
 
 	.iget = (void*) stack_iget,
+	.iset = (void*) stack_iset,
 
 	// list-like type operators
 
