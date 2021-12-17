@@ -18,8 +18,7 @@ static stack_t* stack_new(uint64_t len, void* elems[len]) {
 		}
 	}
 
-	stack_t* stack = calloc(1, sizeof *stack);
-	stack->obj.type = &stack_type;
+	stack_t* stack = batch_alloc(&stack_type);
 
 	stack->len = len;
 
@@ -91,8 +90,7 @@ static stack_t* stack_add(stack_t* x, stack_t* y) {
 		return NULL; // adding invalid type
 	}
 
-	stack_t* stack = calloc(1, sizeof *stack);
-	stack->obj.type = &stack_type;
+	stack_t* stack = batch_alloc(&stack_type);
 
 	stack->len = x->len + y->len;
 	stack->elems = malloc(stack->len * sizeof *stack->elems);
@@ -108,8 +106,7 @@ static stack_t* stack_mul(stack_t* x, int64_t fac) {
 		return NULL; // cannot multiply a stack a negative amount of times
 	}
 
-	stack_t* stack = calloc(1, sizeof *stack);
-	stack->obj.type = &stack_type;
+	stack_t* stack = batch_alloc(&stack_type);
 
 	stack->len = x->len * fac;
 	stack->elems = malloc(stack->len * sizeof *stack->elems);
@@ -182,6 +179,7 @@ static object_t* stack_pop(stack_t* x) {
 
 static type_t stack_type = {
 	.name = "stack",
+	.size = sizeof(stack_t),
 
 	// unary operators
 

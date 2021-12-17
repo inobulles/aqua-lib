@@ -5,11 +5,28 @@
 
 // TODO exception handling system (perhaps a global exception queue?)
 
+// batches
+
+typedef struct object_t object_t; // forward declaration
+typedef struct batch_t batch_t; // forward declaration
+
+struct batch_t {
+	batch_t* prev;
+
+	unsigned count;
+	object_t** objs;
+};
+
+static batch_t* curr_batch = NULL;
+
+// objects
+
 typedef struct type_t type_t; // forward declaration
 
-typedef struct {
+struct object_t {
 	type_t* type;
-} object_t; // abstract "class"
+	batch_t* batch;
+}; // abstract "class"
 
 // manatory types
 
@@ -17,6 +34,7 @@ typedef struct {
 
 struct type_t {
 	const char* name;
+	unsigned size;
 
 	// unary operators
 
@@ -44,6 +62,8 @@ struct type_t {
 
 	stack_t* (*split) (void* _x, void* _delim);
 };
+
+// operations
 
 #define TYPE_OP_ERROR fprintf(stderr, "[TYPES] ERROR '%s' does not have a '%s' operator\n", x->type->name, __func__);
 
@@ -235,6 +255,40 @@ static stack_t* split(void* _x, void* _delim) {
 	}
 
 	return x->type->split(x, delim);
+}
+
+// batch functions
+
+static void* batch_alloc(type_t* type) {
+	object_t* obj = calloc(1, type->size);
+	
+	obj->type = type;
+	obj->batch = curr_batch; // TODO is this a necessary member?
+
+	if (curr_batch) {
+		curr_batch->objs = realloc(curr_batch->objs, ++curr_batch->count * sizeof *curr_batch->objs);
+		curr_batch->objs[curr_batch->count - 1] = obj;
+	}
+
+	return obj;
+}
+
+static void batch_push(void) {
+	batch_t* prev = curr_batch;
+	curr_batch = calloc(1, sizeof *curr_batch);
+	curr_batch->prev = prev;
+}
+
+static void batch_pop(void) {
+	if (!curr_batch) {
+		return;
+	}
+
+	for (int i = 0; i < curr_batch->count; i++) {
+		del(curr_batch->objs[i]);
+	}
+
+	curr_batch = curr_batch->prev;
 }
 
 // mandatory types

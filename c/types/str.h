@@ -17,8 +17,7 @@ static str_t* str_new(const char* cstr) {
 		return NULL;
 	}
 	
-	str_t* str = calloc(1, sizeof *str);
-	str->obj.type = &str_type;
+	str_t* str = batch_alloc(&str_type);
 
 	str->len = strlen(cstr);
 	str->cstr = strdup(cstr);
@@ -59,8 +58,7 @@ static str_t* str_add(str_t* x, str_t* y) {
 		return NULL; // adding invalid type
 	}
 
-	str_t* str = calloc(1, sizeof *str);
-	str->obj.type = &str_type;
+	str_t* str = batch_alloc(&str_type);
 	
 	str->len = x->len + y->len;
 	str->cstr = malloc(str->len + 1);
@@ -78,8 +76,7 @@ static str_t* str_mul(str_t* x, int64_t fac) {
 		return NULL; // cannot multiply a string a negative amount of times
 	}
 
-	str_t* str = calloc(1, sizeof *str);
-	str->obj.type = &str_type;
+	str_t* str = batch_alloc(&str_type);
 
 	str->len = x->len * fac;
 	str->cstr = malloc(str->len + 1);
@@ -100,8 +97,7 @@ static stack_t* str_split(str_t* x, str_t* delim) {
 		return NULL; // splitting with invalid delimiter
 	}
 
-	stack_t* stack = calloc(1, sizeof *stack);
-	stack->obj.type = &stack_type;
+	stack_t* stack = batch_alloc(&stack_type);
 
 	unsigned p = 0;
 
@@ -119,8 +115,7 @@ static stack_t* str_split(str_t* x, str_t* delim) {
 
 	last:
 
-		str = calloc(1, sizeof *str);
-		str->obj.type = &str_type;
+		str = batch_alloc(&str_type);
 
 		str->len = i - p;
 		str->cstr = malloc(str->len + 1);
@@ -141,6 +136,7 @@ static stack_t* str_split(str_t* x, str_t* delim) {
 
 static type_t str_type = {
 	.name = "str",
+	.size = sizeof(str_t),
 	
 	// unary operators
 
