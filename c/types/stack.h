@@ -16,7 +16,13 @@ static stack_t* stack_new(uint64_t len, void* elems[len]) {
 	if (len < 0) {
 		return NULL; // invalid length
 	}
-	
+
+	for (int i = 0; i < len; i++) {
+		if (!elems[i]) {
+			return NULL; // NULL can't be an element
+		}
+	}
+
 	stack_t* stack = calloc(1, sizeof *stack);
 	stack->obj.type = &stack_type;
 
