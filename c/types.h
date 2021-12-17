@@ -1,6 +1,8 @@
 #if !defined(__AQUA_LIB__TYPES)
 #define __AQUA_LIB__TYPES
 
+#include <root.h>
+
 // TODO exception handling system (perhaps a global exception queue?)
 
 typedef struct type_t type_t; // forward declaration
