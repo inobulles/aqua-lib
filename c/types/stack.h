@@ -126,6 +126,19 @@ static stack_t* stack_mul(stack_t* x, int64_t fac) {
 	return stack;
 }
 
+// list-like type operators
+
+static int stack_push(stack_t* x, object_t* y) {
+	if (!y) {
+		return -1; // NULL can't be an element
+	}
+
+	x->elems = realloc(x->elems, ++x->len * sizeof *x->elems);
+	x->elems[x->len - 1] = y;
+
+	return 0;
+}
+
 // type object itself
 
 static type_t stack_type = {
@@ -142,6 +155,10 @@ static type_t stack_type = {
 	.eq = (void*) stack_eq,
 	.add = (void*) stack_add,
 	.mul = (void*) stack_mul,
+
+	// list-like type operators
+
+	.push = (void*) stack_push,
 };
 
 #endif
