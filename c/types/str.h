@@ -33,6 +33,10 @@ static uint64_t str_len(str_t* str) {
 	return str->len;
 }
 
+static void str_print(str_t* str) {
+	printf("%s", str->cstr);
+}
+
 static void str_del(str_t* str) {
 	if (!str->cstr) {
 		return;
@@ -98,6 +102,7 @@ static type_t str_type = {
 	// unary operators
 
 	.len = (void*) str_len,
+	.print = (void*) str_print,
 	.del = (void*) str_del,
 
 	// binary operators

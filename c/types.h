@@ -15,6 +15,7 @@ struct type_t {
 	// unary operators
 
 	uint64_t (*len) (void* _x);
+	void (*print) (void* _x);
 	void (*del) (void* _x);
 
 	// binary operators
@@ -41,6 +42,22 @@ static uint64_t len(void* _x) {
 	}
 
 	return x->type->len(x);
+}
+
+static void print(void* _x) {
+	object_t* x = _x;
+
+	if (!x) {
+		printf("NULL");
+		return;
+	}
+
+	if (x->type->print) {
+		x->type->print(x);
+		return;
+	}
+
+	printf("<type %s>", x->type->name);
 }
 
 static void del(void* _x) {
