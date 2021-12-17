@@ -42,7 +42,7 @@ struct type_t {
 
 	// string-like type operators
 
-	stack_t* (*split) (void* _x, void* _y);
+	stack_t* (*split) (void* _x, void* _delim);
 };
 
 #define TYPE_OP_ERROR fprintf(stderr, "[TYPES] ERROR '%s' does not have a '%s' operator\n", x->type->name, __func__);
@@ -64,7 +64,7 @@ static uint64_t len(void* _x) {
 	return x->type->len(x);
 }
 
-static void print(void* _x) {
+static void _print(void* _x) {
 	object_t* x = _x;
 
 	if (!x) {
@@ -78,6 +78,11 @@ static void print(void* _x) {
 	}
 
 	printf("<type %s>", x->type->name);
+}
+
+static inline void print(void* _x) {
+	_print(_x);
+	printf("\n");
 }
 
 static void del(void* _x) {
@@ -216,9 +221,9 @@ static void* pop(void* _x) {
 
 // string-like type operators
 
-static stack_t* split(void* _x, void* _y) {
+static stack_t* split(void* _x, void* _delim) {
 	object_t* x = _x;
-	object_t* y = _y;
+	object_t* delim = _delim;
 
 	if (!x) {
 		return NULL;
@@ -229,7 +234,7 @@ static stack_t* split(void* _x, void* _y) {
 		return NULL;
 	}
 
-	return x->type->split(x, y);
+	return x->type->split(x, delim);
 }
 
 // mandatory types

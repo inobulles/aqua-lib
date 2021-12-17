@@ -95,8 +95,8 @@ static str_t* str_mul(str_t* x, int64_t fac) {
 
 // string-like type operators
 
-static stack_t* str_split(str_t* x, str_t* y) {
-	if (y->obj.type != &str_type) {
+static stack_t* str_split(str_t* x, str_t* delim) {
+	if (delim->obj.type != &str_type) {
 		return NULL; // splitting with invalid delimiter
 	}
 
@@ -105,13 +105,13 @@ static stack_t* str_split(str_t* x, str_t* y) {
 
 	unsigned p = 0;
 
-	for (int i = 0; i < x->len - y->len + 1; i++) {
-		if (i == x->len - y->len) {
-			i += 2;
+	for (int i = 0; i < x->len + delim->len + 1; i++) {
+		if (i > x->len - delim->len) {
+			i += delim->len;
 			goto last;
 		}
 
-		if (strncmp(x->cstr + i, y->cstr, y->len)) {
+		if (strncmp(x->cstr + i, delim->cstr, delim->len)) {
 			continue;
 		}
 
@@ -130,8 +130,8 @@ static stack_t* str_split(str_t* x, str_t* y) {
 		str->cstr[str->len] = 0;
 		push(stack, str);
 
-		i += y->len;
-		p = i;
+		i += delim->len - 1;
+		p = i + 1;
 	}
 
 	return stack;

@@ -46,7 +46,8 @@ uint64_t send_device(device_t device, uint16_t command, void* data) {
 int main(void);
 
 int __native_entry(void) {
-	return main();
+	int rv = main();
+	return rv;
 }
 
 #endif

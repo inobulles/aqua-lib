@@ -48,7 +48,7 @@ static void stack_print(stack_t* stack) {
 		}
 
 		printf("<%s ", stack->elems[i]->type->name);
-		print(stack->elems[i]);
+		_print(stack->elems[i]);
 		printf(">");
 	}
 
@@ -56,11 +56,11 @@ static void stack_print(stack_t* stack) {
 }
 
 static void stack_del(stack_t* stack) {
-	if (stack->elems) {
-		free(stack->elems);
+	if (!stack->elems) {
+		return;
 	}
 
-	free(stack);
+	free(stack->elems);
 }
 
 // binary operators
