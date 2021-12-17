@@ -24,6 +24,10 @@ struct type_t {
 	void* (*add) (void* _x, void* _y);
 	void* (*mul) (void* _x, int64_t fac); // XXX this is kinda neither unary nor binary... create a separate section for this?
 
+	// indexing operators
+
+	void* (*iget) (void* _x, int64_t index);
+
 	// list-like type operators
 
 	int (*push) (void* _x, void* _y);
@@ -131,6 +135,23 @@ static void* mul(void* _x, int64_t fac) {
 	}
 	
 	return x->type->mul(x, fac);
+}
+
+// indexing operators
+
+static void* iget(void* _x, int64_t index) {
+	object_t* x = _x;
+
+	if (!x) {
+		return NULL;
+	}
+
+	if (!x->type->iget) {
+		TYPE_OP_ERROR
+		return NULL;
+	}
+
+	return x->type->iget(x, index);
 }
 
 // list-like type operators
