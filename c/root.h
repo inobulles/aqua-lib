@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <string.h>
 
 typedef uint64_t (*kos_query_device_t) (uint64_t _, uint64_t name);
 typedef uint64_t (*kos_send_device_t) (uint64_t _, uint64_t device, uint64_t command, uint64_t data);

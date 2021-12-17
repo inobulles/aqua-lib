@@ -1,8 +1,7 @@
+#include <types/stack.h>
+
 #if !defined(__AQUA_LIB__TYPES_STR)
 #define __AQUA_LIB__TYPES_STR
-
-#include <types.h>
-#include <string.h> // for cstr manipulation functions
 
 typedef struct {
 	object_t obj;
@@ -94,6 +93,50 @@ static str_t* str_mul(str_t* x, int64_t fac) {
 	return str;
 }
 
+// string-like type operators
+
+static stack_t* str_split(str_t* x, str_t* y) {
+	if (y->obj.type != &str_type) {
+		return NULL; // splitting with invalid delimiter
+	}
+
+	stack_t* stack = calloc(1, sizeof *stack);
+	stack->obj.type = &stack_type;
+
+	unsigned p = 0;
+
+	for (int i = 0; i < x->len - y->len + 1; i++) {
+		if (i == x->len - y->len) {
+			i += 2;
+			goto last;
+		}
+
+		if (strncmp(x->cstr + i, y->cstr, y->len)) {
+			continue;
+		}
+
+		str_t* str;
+
+	last:
+
+		str = calloc(1, sizeof *str);
+		str->obj.type = &str_type;
+
+		str->len = i - p;
+		str->cstr = malloc(str->len + 1);
+
+		memcpy(str->cstr, x->cstr + p, str->len);
+
+		str->cstr[str->len] = 0;
+		push(stack, str);
+
+		i += y->len;
+		p = i;
+	}
+
+	return stack;
+}
+
 // type object itself
 
 static type_t str_type = {
@@ -110,6 +153,10 @@ static type_t str_type = {
 	.eq = (void*) str_eq,
 	.add = (void*) str_add,
 	.mul = (void*) str_mul,
+
+	// string-like type operators
+
+	.split = (void*) str_split,
 };
 
 #endif

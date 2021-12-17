@@ -11,6 +11,10 @@ typedef struct {
 	type_t* type;
 } object_t; // abstract "class"
 
+// manatory types
+
+#include <types/stack_t.h>
+
 struct type_t {
 	const char* name;
 
@@ -35,6 +39,10 @@ struct type_t {
 
 	int (*push) (void* _x, void* _y);
 	void* (*pop) (void* _x);
+
+	// string-like type operators
+
+	stack_t* (*split) (void* _x, void* _y);
 };
 
 #define TYPE_OP_ERROR fprintf(stderr, "[TYPES] ERROR '%s' does not have a '%s' operator\n", x->type->name, __func__);
@@ -205,5 +213,27 @@ static void* pop(void* _x) {
 
 	return x->type->pop(x);
 }
+
+// string-like type operators
+
+static stack_t* split(void* _x, void* _y) {
+	object_t* x = _x;
+	object_t* y = _y;
+
+	if (!x) {
+		return NULL;
+	}
+
+	if (!x->type->split) {
+		TYPE_OP_ERROR
+		return NULL;
+	}
+
+	return x->type->split(x, y);
+}
+
+// mandatory types
+
+#include <types/stack.h>
 
 #endif

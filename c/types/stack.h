@@ -1,14 +1,9 @@
+#include <types.h>
+
 #if !defined(__AQUA_LIB__TYPES_STACK)
 #define __AQUA_LIB__TYPES_STACK
 
-#include <types.h>
-
-typedef struct {
-	object_t obj;
-
-	uint64_t len;
-	object_t** elems;
-} stack_t;
+#include <types/stack_t.h>
 
 static type_t stack_type; // forward declaration
 
