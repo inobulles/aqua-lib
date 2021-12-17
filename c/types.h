@@ -27,6 +27,7 @@ struct type_t {
 	// indexing operators
 
 	void* (*iget) (void* _x, int64_t index);
+	int (*iset) (void* _x, int64_t index, void* _y);
 
 	// list-like type operators
 
@@ -152,6 +153,22 @@ static void* iget(void* _x, int64_t index) {
 	}
 
 	return x->type->iget(x, index);
+}
+
+static int iset(void* _x, int64_t index, void* _y) {
+	object_t* x = _x;
+	object_t* y = _y;
+
+	if (!x) {
+		return -1;
+	}
+
+	if (!x->type->iset) {
+		TYPE_OP_ERROR
+		return -1;
+	}
+
+	return x->type->iset(x, index, y);
 }
 
 // list-like type operators
