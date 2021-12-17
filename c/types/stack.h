@@ -139,6 +139,13 @@ static int stack_push(stack_t* x, object_t* y) {
 	return 0;
 }
 
+static object_t* stack_pop(stack_t* x) {
+	object_t* res = x->elems[--x->len];
+	x->elems = realloc(x->elems, x->len * sizeof *x->elems);
+
+	return res;
+}
+
 // type object itself
 
 static type_t stack_type = {
@@ -159,6 +166,7 @@ static type_t stack_type = {
 	// list-like type operators
 
 	.push = (void*) stack_push,
+	.pop = (void*) stack_pop,
 };
 
 #endif
