@@ -23,6 +23,10 @@ struct type_t {
 	unsigned (*eq) (void* _x, void* _y);
 	void* (*add) (void* _x, void* _y);
 	void* (*mul) (void* _x, int64_t fac); // XXX this is kinda neither unary nor binary... create a separate section for this?
+
+	// list-like type operators
+
+	int (*push) (void* _x, void* _y);
 };
 
 #define TYPE_OP_ERROR fprintf(stderr, "[TYPES] ERROR '%s' does not have a '%s' operator\n", x->type->name, __func__);
@@ -126,6 +130,24 @@ static void* mul(void* _x, int64_t fac) {
 	}
 	
 	return x->type->mul(x, fac);
+}
+
+// list-like type operators
+
+static int push(void* _x, void* _y) {
+	object_t* x = _x;
+	object_t* y = _y;
+
+	if (!x) {
+		return -1;
+	}
+
+	if (!x->type->push) {
+		TYPE_OP_ERROR
+		return -1;
+	}
+
+	return x->type->push(x, y);
 }
 
 #endif
