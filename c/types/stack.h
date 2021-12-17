@@ -104,7 +104,7 @@ static stack_t* stack_add(stack_t* x, stack_t* y) {
 
 static stack_t* stack_mul(stack_t* x, int64_t fac) {
 	if (fac < 0) {
-		return NULL; // cannot multiply a stack a negative amount of tiems
+		return NULL; // cannot multiply a stack a negative amount of times
 	}
 
 	stack_t* stack = calloc(1, sizeof *stack);
