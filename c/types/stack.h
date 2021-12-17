@@ -126,6 +126,18 @@ static stack_t* stack_mul(stack_t* x, int64_t fac) {
 	return stack;
 }
 
+// indexing operators
+
+static object_t* stack_iget(stack_t* x, int64_t index) {
+	index += x->len * (index < 0); // wrap negative values
+	
+	if (index < 0 || index >= x->len) {
+		return NULL; // index out of bounds
+	}
+
+	return x->elems[index];
+}
+
 // list-like type operators
 
 static int stack_push(stack_t* x, object_t* y) {
@@ -162,6 +174,10 @@ static type_t stack_type = {
 	.eq = (void*) stack_eq,
 	.add = (void*) stack_add,
 	.mul = (void*) stack_mul,
+
+	// indexing operators
+
+	.iget = (void*) stack_iget,
 
 	// list-like type operators
 
