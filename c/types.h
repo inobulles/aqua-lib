@@ -12,6 +12,7 @@ typedef struct batch_t batch_t; // forward declaration
 
 struct batch_t {
 	batch_t* prev;
+	batch_t* next;
 
 	unsigned count;
 	object_t** objs;
@@ -291,13 +292,26 @@ static void* batch_alloc(type_t* type) {
 static void batch_push(void) {
 	batch_t* prev = curr_batch;
 	curr_batch = calloc(1, sizeof *curr_batch);
-	curr_batch->prev = prev;
+
+	if (prev) {
+		curr_batch->prev = prev;
+		prev->next = curr_batch;
+	}
 }
 
 static void batch_pop(void) {
 	if (!curr_batch) {
 		return;
 	}
+
+	// make sure all child batches have already popped
+
+	if (curr_batch->next) {
+		curr_batch = curr_batch->next;
+		batch_pop(); // will automatically set 'curr_batch' back to us
+	}
+
+	// free all objects held by batch
 
 	for (int i = 0; i < curr_batch->count; i++) {
 		if (!curr_batch->objs[i]) {
