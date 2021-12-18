@@ -26,6 +26,7 @@ typedef struct type_t type_t; // forward declaration
 
 struct object_t {
 	type_t* type;
+	void* client;
 
 	// batch stuff
 
