@@ -69,7 +69,7 @@ static str_t* str_add(str_t* x, str_t* y) {
 	memcpy(str->cstr, x->cstr, x->len);
 	memcpy(str->cstr + x->len, y->cstr, y->len);
 
-	str->cstr[str->len] = 0;
+	str->cstr[str->len] = '\0';
 
 	return str;
 }
@@ -88,7 +88,7 @@ static str_t* str_mul(str_t* x, int64_t fac) {
 		memcpy(str->cstr + x->len * i, x->cstr, x->len);
 	}
 
-	str->cstr[str->len] = 0;
+	str->cstr[str->len] = '\0';
 
 	return str;
 }
@@ -136,6 +136,33 @@ static int str_iset(str_t* x, int64_t index, object_t* _y) {
 
 	x->cstr[index] = y;
 	return 0;
+}
+
+// list-like type operators
+// cf. indexing operators comment
+
+static int str_push(str_t* x, object_t* _y) {
+	char y = (char) (intptr_t) _y;
+
+	if (!y) {
+		return -1; // NULL can't be an element
+	}
+
+	x->cstr = realloc(x->cstr, ++x->len + 1);
+	
+	x->cstr[x->len - 1] = y;
+	x->cstr[x->len] = '\0';
+
+	return 0;
+}
+
+static object_t* str_pop(str_t* x) {
+	x->cstr = realloc(x->cstr, x->len);
+
+	char res = x->cstr[--x->len];
+	x->cstr[x->len] = '\0';
+
+	return (object_t*) (intptr_t) res;
 }
 
 // string-like type operators
@@ -202,6 +229,11 @@ static type_t str_type = {
 
 	.iget = (void*) str_iget,
 	.iset = (void*) str_iset,
+
+	// list-like type operators
+
+	.push = (void*) str_push,
+	.pop = (void*) str_pop,
 
 	// string-like type operators
 
