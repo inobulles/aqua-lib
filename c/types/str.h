@@ -13,11 +13,14 @@ typedef struct {
 static type_t str_type; // forward declaration
 
 static str_t* str_new(const char* cstr) {
-	if (!cstr) {
-		return NULL;
-	}
-	
 	str_t* str = batch_alloc(&str_type);
+
+	if (!cstr) {
+		str->len = 0;
+		str->cstr = calloc(1, 1);
+
+		return str;
+	}
 
 	str->len = strlen(cstr);
 	str->cstr = strdup(cstr);
