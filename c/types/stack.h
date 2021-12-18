@@ -169,6 +169,10 @@ static int stack_push(stack_t* x, object_t* y) {
 }
 
 static object_t* stack_pop(stack_t* x) {
+	if (!x->len) {
+		return NULL; // no more elements left to pop
+	}
+
 	object_t* res = x->elems[--x->len];
 	x->elems = realloc(x->elems, x->len * sizeof *x->elems);
 
