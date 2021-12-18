@@ -82,16 +82,23 @@ static void ui_list_view_print(ui_list_view_t* view) {
 }
 
 static void ui_list_view_del(ui_list_view_t* view) {
-	for (unsigned i = 0; i < len(view->items); i++) {
-		ui_list_item_t* item = iget(view->items, i);
-		del(view->item);
+	del(view->items);
+}
+
+static int ui_list_view_push(ui_list_view_t* x, ui_list_item_t* item) {
+	if (item->obj.type != &ui_list_item_type) {
+		return -1; // don't try to add anything other than a UIListItem to a UIListView or I'll get extra angery again 😡😡😡
 	}
 
-	del(view->stack);
+	return push(x->items, item);
+}
+
+static object_t* ui_list_view_pop(ui_list_view_t* x) {
+	return pop(x->items);
 }
 
 static object_t* ui_list_view_iget(ui_list_view_t* x, int64_t index) {
-	return iget(x->stack, index);
+	return iget(x->items, index);
 }
 
 static type_t ui_list_view_type = {
@@ -106,24 +113,12 @@ static type_t ui_list_view_type = {
 
 	// list-like type operators
 
+	.push = (void*) ui_list_view_push,
+	.pop = (void*) ui_list_view_pop,
 	.iget = (void*) ui_list_view_iget,
 };
 
 // special UIListView-specific operations
-
-static ui_list_item_t* ui_list_view_push(ui_list_view_t* view, ui_element_t section, ui_element_t text, const char* cstr) {	
-	// this function needs to be different from the standard types push operator, because we want to handle the reference to item ourselves
-	// indeed, it would be quite cumbersome for the client to have to do that theirself
-
-	ui_list_item_t* item = ui_list_item_new(section, text, cstr);
-	
-	if (!item) {
-		return NULL; // something went wrong creating the item
-	}
-
-	push(view->stack, item);
-	return NULL;
-}
 
 #if !defined(UI_LIST_VIEW_HL_START)
 	#define UI_LIST_VIEW_HL_START "<span background='yellow' foreground='black'>"
@@ -195,7 +190,8 @@ static int ui_list_view_search(ui_list_view_t* view, const char* _needle, unsign
 		batch_pop();
 	}
 
-	batch_pop();
+	// batch_pop();
+	return 0;
 }
 
 #endif

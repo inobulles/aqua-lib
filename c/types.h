@@ -322,7 +322,10 @@ static void batch_pop(void) {
 		del(curr_batch->objs[i]);
 	}
 
-	curr_batch->prev->next = NULL;
+	if (curr_batch->prev) {
+		curr_batch->prev->next = NULL;
+	}
+	
 	curr_batch = curr_batch->prev;
 }
 
