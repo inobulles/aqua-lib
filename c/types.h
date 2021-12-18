@@ -315,11 +315,7 @@ static void batch_pop(void) {
 	// free all objects held by batch
 
 	for (int i = 0; i < curr_batch->count; i++) {
-		if (!curr_batch->objs[i]) {
-			continue; // this object has already been freed
-		}
-
-		del(curr_batch->objs[i]);
+		del(curr_batch->objs[i]); // free object if it hasn't already been
 	}
 
 	if (curr_batch->prev) {
