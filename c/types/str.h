@@ -93,6 +93,51 @@ static str_t* str_mul(str_t* x, int64_t fac) {
 	return str;
 }
 
+// indexing operators
+// a few awkward casts here because this isn't really the intended uses for these operators
+// TODO perhaps create special operators just for this?
+// TODO also see how indexing UTF-8 encoded strings would work
+// btw have you ever noticed how the word "awkward" is well... awkward? 🤔
+// must be the work of Big Word and the MSM 🧐
+// anyway
+
+static inline int64_t str_process_index(str_t* x, int64_t index) {
+	index += x->len * (index < 0); // wrap negative values
+	
+	if (index < 0 || index >= x->len) {
+		return -1; // index out of bounds
+	}
+
+	return index;
+}
+
+static object_t* str_iget(str_t* x, int64_t index) {
+	index = str_process_index(x, index);
+
+	if (index < 0) {
+		return (object_t*) '\0'; // invalid index
+	}
+
+	return (object_t*) (intptr_t) x->cstr[index];
+}
+
+static int str_iset(str_t* x, int64_t index, object_t* _y) {
+	char y = (char) (intptr_t) _y;
+	
+	if (!y) {
+		return -1; // '\0' can't be a character
+	}
+
+	index = str_process_index(x, index);
+
+	if (index < 0) {
+		return -1; // invalid index
+	}
+
+	x->cstr[index] = y;
+	return 0;
+}
+
 // string-like type operators
 
 static stack_t* str_split(str_t* x, str_t* delim) {
@@ -152,6 +197,11 @@ static type_t str_type = {
 	.eq = (void*) str_eq,
 	.add = (void*) str_add,
 	.mul = (void*) str_mul,
+
+	// indexing operators
+
+	.iget = (void*) str_iget,
+	.iset = (void*) str_iset,
 
 	// string-like type operators
 

@@ -128,7 +128,7 @@ static type_t ui_list_view_type = {
 	#define UI_LIST_VIEW_HL_END "</span>"
 #endif
 
-static int ui_list_view_search(ui_list_view_t* view, const char* _needle, unsigned hl /* highlight */) {
+static int ui_list_view_search(ui_list_view_t* view, str_t* needle, unsigned hl /* highlight */) {
 	batch_push();
 	
 	str_t* hl_start, *hl_end;
@@ -138,7 +138,6 @@ static int ui_list_view_search(ui_list_view_t* view, const char* _needle, unsign
 		hl_end = str_new(UI_LIST_VIEW_HL_END);
 	}
 
-	str_t* needle = str_new(_needle);
 	unsigned empty_needle = !len(needle);
 
 	for (int i = 0; i < len(view->items); i++) {
