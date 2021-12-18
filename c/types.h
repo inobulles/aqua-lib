@@ -25,6 +25,10 @@ typedef struct type_t type_t; // forward declaration
 
 struct object_t {
 	type_t* type;
+
+	// batch stuff
+
+	unsigned batch_i;
 	batch_t* batch;
 }; // abstract "class"
 
@@ -116,7 +120,16 @@ static void del(void* _x) {
 		x->type->del(x);
 	}
 
+	unsigned batch_i = x->batch_i;
 	free(x);
+
+	// make sure calling 'batch_pop' later doesn't double-free
+
+	if (!curr_batch) {
+		return;
+	}
+
+	curr_batch->objs[batch_i] = NULL;
 }
 
 // binary operators
@@ -266,7 +279,9 @@ static void* batch_alloc(type_t* type) {
 	obj->batch = curr_batch; // TODO is this a necessary member?
 
 	if (curr_batch) {
-		curr_batch->objs = realloc(curr_batch->objs, ++curr_batch->count * sizeof *curr_batch->objs);
+		curr_batch->count++;
+
+		curr_batch->objs = realloc(curr_batch->objs, curr_batch->count * sizeof *curr_batch->objs);
 		curr_batch->objs[curr_batch->count - 1] = obj;
 	}
 
@@ -285,6 +300,10 @@ static void batch_pop(void) {
 	}
 
 	for (int i = 0; i < curr_batch->count; i++) {
+		if (!curr_batch->objs[i]) {
+			continue; // this object has already been freed
+		}
+
 		del(curr_batch->objs[i]);
 	}
 

@@ -28,8 +28,6 @@ static type_t list_type; // forward declaration
 static inline int _list_insert(list_t* list, int64_t index, object_t* obj) {
 	list_node_t* node = calloc(1, sizeof *node);
 	node->obj = obj;
-
-
 }
 
 static list_t* list_new(uint64_t len, void* elems[len]) {
