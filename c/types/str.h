@@ -157,6 +157,10 @@ static int str_push(str_t* x, object_t* _y) {
 }
 
 static object_t* str_pop(str_t* x) {
+	if (!x->len) {
+		return NULL; // no more elements left to pop
+	}
+
 	x->cstr = realloc(x->cstr, x->len);
 
 	char res = x->cstr[--x->len];
