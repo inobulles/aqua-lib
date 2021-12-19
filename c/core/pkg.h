@@ -38,4 +38,18 @@ char** pkg_app_list(void) {
 	return (char**) send_device(pkg_device, 0x6C73, NULL);
 }
 
+// package information functions
+
+pkg_t pkg_load(const char* path) {
+	if (pkg_init() < 0) {
+		return 0;
+	}
+
+	return send_device(pkg_device, 0x6C70, (uint64_t[]) { (uint64_t) path });
+}
+
+void pkg_free(pkg_t pkg) {
+	send_device(pkg_device, 0x6670, (uint64_t[]) { pkg });
+}
+
 #endif
