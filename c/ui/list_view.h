@@ -158,7 +158,7 @@ static int ui_list_view_search(ui_list_view_t* view, str_t* needle, unsigned hl 
 		stack_t* components = split(haystack, needle);
 
 		unsigned found = len(components) > 1;
-		
+
 		if (!found) {
 			goto end;
 		}
@@ -180,7 +180,7 @@ static int ui_list_view_search(ui_list_view_t* view, str_t* needle, unsigned hl 
 
 			markup = add(markup, bit);
 		}
-		
+
 		ui_set_text(item->text, markup->cstr); // if you're wondering, it's totally safe to free markup->cstr after, as ui_set_text duplicated the string
 
 	end:

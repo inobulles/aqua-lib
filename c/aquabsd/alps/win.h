@@ -15,7 +15,7 @@ typedef struct {
 	uint64_t win;
 } win_t;
 
-device_t win_device = -1;
+static device_t win_device = -1;
 
 int win_init(void) {
 	if (win_device == -1) {
