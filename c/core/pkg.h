@@ -31,7 +31,7 @@ int pkg_app_count(void) {
 
 char** pkg_app_list(void) {
 	if (pkg_init() < 0) {
-		return -1;
+		return NULL;
 	}
 
 	// client's duty to free this memory and all the blocks it points to 👮
