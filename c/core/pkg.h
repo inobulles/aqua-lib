@@ -64,4 +64,8 @@ char* pkg_generic(pkg_t pkg, const char* key) {
 	return (char*) send_device(pkg_device, 0x6767, (uint64_t[]) { pkg, (uint64_t) key });
 }
 
+int pkg_boot(pkg_t pkg) {
+	return send_device(pkg_device, 0x626F, (uint64_t[]) { pkg });
+}
+
 #endif
