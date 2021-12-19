@@ -38,7 +38,7 @@ char** pkg_app_list(void) {
 	return (char**) send_device(pkg_device, 0x6C73, NULL);
 }
 
-// package information functions
+// package manipulation functions
 
 pkg_t pkg_load(const char* path) {
 	if (pkg_init() < 0) {
@@ -50,6 +50,18 @@ pkg_t pkg_load(const char* path) {
 
 void pkg_free(pkg_t pkg) {
 	send_device(pkg_device, 0x6670, (uint64_t[]) { pkg });
+}
+
+#define PKG_GEN_INFO_FUNC(key, cmd) \
+	char* pkg_##key(pkg_t pkg) { \
+		return (char*) send_device(pkg_device, (cmd), (uint64_t[]) { pkg }); \
+	}
+
+PKG_GEN_INFO_FUNC(name,   0x676E)
+PKG_GEN_INFO_FUNC(unique, 0x6775)
+
+char* pkg_generic(pkg_t pkg, const char* key) {
+	return (char*) send_device(pkg_device, 0x6767, (uint64_t[]) { pkg, (uint64_t) key });
 }
 
 #endif
