@@ -1,5 +1,5 @@
-#if !defined(__AQUA_LIB__AQUABSD_ALPS_PKG)
-#define __AQUA_LIB__AQUABSD_ALPS_PKG
+#if !defined(__AQUA_LIB__CORE_PKG)
+#define __AQUA_LIB__CORE_PKG
 
 #include <root.h>
 
@@ -8,7 +8,7 @@ typedef uint64_t pkg_t;
 
 int pkg_init(void) {
 	if (pkg_device == -1) {
-		pkg_device = query_device("aquabsd.alps.pkg");
+		pkg_device = query_device("core.pkg");
 	}
 
 	if (pkg_device == -1) { // failed to query device
@@ -35,7 +35,7 @@ char** pkg_app_list(void) {
 	}
 
 	// client's duty to free this memory and all the blocks it points to 👮
-	return send_device(pkg_device, 0x6C73, NULL);
+	return (char**) send_device(pkg_device, 0x6C73, NULL);
 }
 
 #endif
