@@ -21,8 +21,8 @@ int wm_init(void) {
 		wm_device = query_device("aquabsd.alps.wm");
 	}
 
-	if (wm_device == -1) { // failed to query device
-		return -1;
+	if (wm_device == -1) {
+		return -1; // failed to query device
 	}
 
 	return 0;

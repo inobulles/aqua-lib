@@ -3,17 +3,35 @@
 
 #include <root.h>
 
-// TODO error handling
-
 static device_t svg_device = -1;
 typedef uint64_t svg_t;
 
-svg_t svg_load(const char* path) {
+int svg_init(void) {
 	if (svg_device == -1) {
 		svg_device = query_device("aquabsd.alps.svg");
 	}
 
+	if (svg_device == -1) {
+		return -1; // failed to query device
+	}
+
+	return 0;
+}
+
+svg_t svg_load(const char* path) {
+	if (svg_init() < 0) {
+		return 0;
+	}
+
 	return send_device(svg_device, 0x6C73, (uint64_t[]) { (uint64_t) path });
+}
+
+svg_t svg_load_cstr(const char* cstr) {
+	if (svg_init() < 0) {
+		return 0;
+	}
+
+	return send_device(svg_device, 0x6C64, (uint64_t[]) { (uint64_t) cstr });
 }
 
 int svg_draw(svg_t svg, uint64_t size, uint8_t** bitmap_reference, uint64_t* width_reference, uint64_t* height_reference) {

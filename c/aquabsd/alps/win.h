@@ -22,8 +22,8 @@ int win_init(void) {
 		win_device = query_device("aquabsd.alps.win");
 	}
 
-	if (win_device == -1) { // failed to query device
-		return -1;
+	if (win_device == -1) {
+		return -1; // failed to query device
 	}
 
 	return 0;

@@ -11,8 +11,8 @@ int pkg_init(void) {
 		pkg_device = query_device("core.pkg");
 	}
 
-	if (pkg_device == -1) { // failed to query device
-		return -1;
+	if (pkg_device == -1) {
+		return -1; // failed to query device
 	}
 
 	return 0;
