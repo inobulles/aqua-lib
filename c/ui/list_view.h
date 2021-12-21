@@ -15,6 +15,10 @@ typedef struct {
 
 	ui_element_t section;
 	ui_element_t text;
+
+	// options
+
+	unsigned default_hide;
 } ui_list_item_t;
 
 static type_t ui_list_item_type; // forward declaration
@@ -45,6 +49,13 @@ static void ui_list_item_del(ui_list_item_t* item) {
 	// also, although this is assumed to be the case (cf. ui_list_item_new), there's a chance that item->text is not actually a descendant of item->section, and thus will be... just no don't do it or I'll get mad 😡
 
 	del(item->str);
+}
+
+// special UIListItem-specific operations
+
+static void ui_list_item_default_hide(ui_list_item_t* item, unsigned default_hide) {
+	item->default_hide = default_hide;
+	ui_set_visibility(item->section, !item->default_hide, 0);
 }
 
 static type_t ui_list_item_type = {
@@ -144,7 +155,7 @@ static int ui_list_view_search(ui_list_view_t* view, str_t* needle, unsigned hl 
 		ui_list_item_t* item = iget(view->items, i);
 
 		if (empty_needle) {
-			ui_set_visibility(item->section, 1, 0);
+			ui_set_visibility(item->section, !item->default_hide, 0);
 			ui_set_text(item->text, item->str->cstr);
 			
 			continue;
