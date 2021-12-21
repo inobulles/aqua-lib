@@ -139,6 +139,8 @@ static type_t ui_list_view_type = {
 	#define UI_LIST_VIEW_HL_END "</span>"
 #endif
 
+// returns the amount of visible items
+
 static int ui_list_view_search(ui_list_view_t* view, str_t* needle, unsigned hl /* highlight */) {
 	batch_push();
 	
@@ -150,11 +152,14 @@ static int ui_list_view_search(ui_list_view_t* view, str_t* needle, unsigned hl 
 	}
 
 	unsigned empty_needle = !len(needle);
+	unsigned count = 0;
 
 	for (int i = 0; i < len(view->items); i++) {
 		ui_list_item_t* item = iget(view->items, i);
 
 		if (empty_needle) {
+			count += !item->default_hide;
+
 			ui_set_visibility(item->section, !item->default_hide, 0);
 			ui_set_text(item->text, item->str->cstr);
 			
@@ -196,12 +201,14 @@ static int ui_list_view_search(ui_list_view_t* view, str_t* needle, unsigned hl 
 
 	end:
 
+		count += found;
 		ui_set_visibility(item->section, found, 0);
+		
 		batch_pop();
 	}
 
 	batch_pop();
-	return 0;
+	return count;
 }
 
 #endif
