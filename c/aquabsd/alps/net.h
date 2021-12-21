@@ -34,4 +34,19 @@ char* net_read_resp(net_resp_t resp) {
 	return (char*) send_device(net_device, 0x7272, (uint64_t[]) { resp });
 }
 
+// functions for extra lazy developers 😒
+
+char* net_request(const char* url) {
+	net_resp_t resp = net_get_resp(url);
+
+	if (!resp) {
+		return NULL;
+	}
+
+	char* rv = net_read_resp(resp);
+	net_free_resp(resp);
+
+	return rv;
+}
+
 #endif
