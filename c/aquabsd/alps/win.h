@@ -77,6 +77,10 @@ void win_grab_focus(win_t* win) {
 	send_device(win_device, 0x6667, (uint64_t[]) { win->win });
 }
 
+void win_move(win_t* win, float x, float y) {
+	send_device(win_device, 0x6D76, (uint64_t[]) { win->win, *(uint64_t*) &x, *(uint64_t*) &y });
+}
+
 void win_delete(win_t* win) {
 	send_device(win_device, 0x6463, (uint64_t[]) { win->win });
 	free(win);
