@@ -77,6 +77,8 @@ void wm_make_compositing(wm_t wm) {
 }
 
 // provider stuff
+// in AQUA-land & in the context of window managers, "providers" are your individual monitors;
+// that is to say they have XY coordinates and a certain resolution
 
 int wm_provider_count(wm_t wm) {
 	return send_device(wm_device, 0x7064, (uint64_t[]) { wm });
