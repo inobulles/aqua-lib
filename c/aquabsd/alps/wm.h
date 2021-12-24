@@ -76,4 +76,26 @@ void wm_make_compositing(wm_t wm) {
 	send_device(wm_device, 0x6D63, (uint64_t[]) { wm });
 }
 
+// provider stuff
+
+int wm_provider_count(wm_t wm) {
+	return send_device(wm_device, 0x7064, (uint64_t[]) { wm });
+}
+
+int wm_provider_x(wm_t wm, unsigned id) {
+	return send_device(wm_device, 0x7078, (uint64_t[]) { wm, id });
+}
+
+int wm_provider_y(wm_t wm, unsigned id) {
+	return send_device(wm_device, 0x7079, (uint64_t[]) { wm, id });
+}
+
+int wm_provider_x_res(wm_t wm, unsigned id) {
+	return send_device(wm_device, 0x707A, (uint64_t[]) { wm, id });
+}
+
+int wm_provider_y_res(wm_t wm, unsigned id) {
+	return send_device(wm_device, 0x707B, (uint64_t[]) { wm, id });
+}
+
 #endif
