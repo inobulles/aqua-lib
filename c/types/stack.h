@@ -8,7 +8,7 @@
 static type_t stack_type; // forward declaration
 
 static stack_t* stack_new(uint64_t len, void* elems[len]) {
-	if (len < 0) {
+	if ((int64_t) len < 0) {
 		return NULL; // invalid length
 	}
 
