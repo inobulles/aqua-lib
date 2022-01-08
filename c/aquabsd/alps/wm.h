@@ -10,6 +10,7 @@ typedef enum {
 	WM_CB_MODIFY,
 	WM_CB_DELETE,
 	WM_CB_FOCUS,
+	WM_CB_CLICK,
 	WM_CB_LEN
 } wm_cb_t;
 
@@ -68,8 +69,18 @@ void wm_set_name(wm_t wm, const char* name) {
 	send_device(wm_device, 0x736E, (uint64_t[]) { wm, (uint64_t) name });
 }
 
-int wm_register_cb(wm_t wm, wm_cb_t type, int (*cb) (uint64_t wm, uint64_t win, uint64_t param), void* param) {
+// these are different functions because WM_CB_CLICK callbacks have a bit of a different signature
+
+static inline int _wm_register_generic_cb(wm_t wm, wm_cb_t type, int (*cb) (), void* param) {
 	return send_device(wm_device, 0x7263, (uint64_t[]) {wm, type, (uint64_t) cb, (uint64_t) param});
+}
+
+int wm_register_cb(wm_t wm, wm_cb_t type, int (*cb) (uint64_t wm, uint64_t win, uint64_t param), void* param) {
+	return _wm_register_generic_cb(wm, type, cb, param);
+}
+
+int wm_register_cb_click(wm_t wm, int (*cb) (uint64_t x, uint64_t y, uint64_t param), void* param) {
+	return _wm_register_generic_cb(wm, WM_CB_CLICK, cb, param);
 }
 
 void wm_make_compositing(wm_t wm) {
