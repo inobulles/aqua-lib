@@ -99,40 +99,40 @@ static unsigned list_eq(list_t* x, list_t* y) {
 
 // indexing operators
 
-static inline object_t* _list_process_index_head(list_t* x, int64_t index) {
-	object_t* elem = x->head;
+static inline object_t* _list_process_index_head(list_t* list, int64_t index) {
+	object_t* elem = list->head;
 
 	for (int64_t i = 0; elem && i != index; elem = elem->next, i++);
 
 	return elem;
 }
 
-static inline object_t* _list_process_index_tail(list_t* x, int64_t index) {
-	object_t* elem = x->tail;
+static inline object_t* _list_process_index_tail(list_t* list, int64_t index) {
+	object_t* elem = list->tail;
 
-	for (int64_t i = x->len - 1; elem && i != index; elem = elem->prev, i--);
+	for (int64_t i = list->len - 1; elem && i != index; elem = elem->prev, i--);
 
 	return elem;
 }
 
-static inline object_t* _list_process_index(list_t* x, int64_t index) {
-	index += x->len * (index < 0); // wrap negative values
+static inline object_t* _list_process_index(list_t* list, int64_t index) {
+	index += list->len * (index < 0); // wrap negative values
 
-	if (index < 0 || index >= x->len) {
+	if (index < 0 || index >= list->len) {
 		return NULL; // index out of bounds
 	}
 
-	if (index < x->len / 2) {
-		return _list_process_index_head(x, index);
+	if (index < list->len / 2) {
+		return _list_process_index_head(list, index);
 	}
 
 	else {
-		return _list_process_index_tail(x, index);
+		return _list_process_index_tail(list, index);
 	}
 }
 
 static object_t* list_iget(list_t* x, int64_t index) {
-	return list_process_index(x, index);
+	return _list_process_index(x, index);
 }
 
 static int list_iset(list_t* x, int64_t index, object_t* y) {
@@ -140,7 +140,7 @@ static int list_iset(list_t* x, int64_t index, object_t* y) {
 		return -1; // NULL can't be an element
 	}
 
-	object_t* elem = list_process_index(x, index);
+	object_t* elem = _list_process_index(x, index);
 
 	if (!elem) {
 		return -1; // invalid index
@@ -294,8 +294,6 @@ static type_t list_type = {
 	// binary operators
 
 	.eq = (void*) list_eq,
-	.add = (void*) list_add,
-	.mul = (void*) list_mul,
 
 	// indexing operators
 
