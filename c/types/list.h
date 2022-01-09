@@ -1,37 +1,28 @@
 // "list" implies a doubly-linked list
 
+// TODO how are objects which are contained within multiple lists supposed to work?
+// TODO maybe find a failsafe to not accidentally remove an element from a list which doesn't contain it
+
 #if !defined(__AQUA_LIB__TYPES_LIST)
 #define __AQUA_LIB__TYPES_LIST
 
 #include <types.h>
-
-typedef struct list_node_t list_node_t; // forward declaration
-
-struct list_node_t {
-	object_t* obj;
-
-	list_node_t* prev;
-	list_node_t* next;
-};
 
 typedef struct {
 	object_t obj;
 
 	uint64_t len;
 
-	list_node_t* head;
-	list_node_t* tail;
+	object_t* head;
+	object_t* tail;
 } list_t;
 
 static type_t list_type; // forward declaration
 
-static inline int _list_insert(list_t* list, int64_t index, object_t* obj) {
-	list_node_t* node = calloc(1, sizeof *node);
-	node->obj = obj;
-}
+static int list_push(list_t* x, object_t* y);
 
 static list_t* list_new(uint64_t len, void* elems[len]) {
-	if (len < 0) {
+	if ((int64_t) len < 0) {
 		return NULL; // invalid length
 	}
 
@@ -50,7 +41,7 @@ static list_t* list_new(uint64_t len, void* elems[len]) {
 	list->tail = NULL;
 
 	for (int i = 0; i < len; i++) {
-		_list_insert(list, i, elems[i]);
+		list_push(list, elems[i]);
 	}
 
 	return list;
@@ -64,14 +55,14 @@ static uint64_t list_len(list_t* list) {
 
 static void list_print(list_t* list) {
 	printf("[");
-	
-	for (int i = 0; i < list->len; i++) {
-		if (i) {
+
+	for (object_t* elem = list->head; elem; elem = elem->next) {
+		if (elem->next) {
 			printf(", ");
 		}
 
-		printf("<%s ", list->elems[i]->type->name);
-		print(list->elems[i]);
+		printf("<%s ", elem->type->name);
+		print(elem);
 		printf(">");
 	}
 
@@ -79,10 +70,6 @@ static void list_print(list_t* list) {
 }
 
 static void list_del(list_t* list) {
-	if (list->elems) {
-		free(list->elems);
-	}
-
 	free(list);
 }
 
@@ -97,10 +84,11 @@ static unsigned list_eq(list_t* x, list_t* y) {
 		return 0; // lengths are not equal
 	}
 
-	for (int i = 0; i < x->len; i++) {
-		object_t* x_elem = x->elems[i];
-		object_t* y_elem = y->elems[i];
-
+	for (
+		object_t* x_elem = x->head, *y_elem = y->head;
+		x_elem && y_elem; // it should never be the case that one of these is NULL but not the other
+		x_elem = x_elem->next, y_elem = y_elem->next
+	) {
 		if (!eq(x_elem, y_elem)) {
 			return 0; // found one differing element
 		}
@@ -109,53 +97,42 @@ static unsigned list_eq(list_t* x, list_t* y) {
 	return 1; // all elements are equal
 }
 
-static list_t* list_add(list_t* x, list_t* y) {
-	if (y->obj.type != &list_type) {
-		return NULL; // adding invalid type
-	}
-
-	list_t* list = calloc(1, sizeof *list);
-	list->obj.type = &list_type;
-
-	list->len = x->len + y->len;
-	list->elems = malloc(list->len * sizeof *list->elems);
-
-	memcpy(list->elems, x->elems, x->len * sizeof *list->elems);
-	memcpy(list->elems + x->len, y->elems, y->len * sizeof *list->elems);
-
-	return list;
-}
-
-static list_t* list_mul(list_t* x, int64_t fac) {
-	if (fac < 0) {
-		return NULL; // cannot multiply a list a negative amount of times
-	}
-
-	list_t* list = calloc(1, sizeof *list);
-	list->obj.type = &list_type;
-
-	list->len = x->len * fac;
-	list->elems = malloc(list->len * sizeof *list->elems);
-
-	for (int i = 0; i < fac; i++) {
-		memcpy(list->elems + x->len * i, x->elems, x->len * sizeof *list->elems);
-	}
-
-	return list;
-}
-
 // indexing operators
 
+static inline object_t* _list_process_index_head(list_t* x, int64_t index) {
+	object_t* elem = x->head;
 
+	for (int64_t i = 0; elem && i != index; elem = elem->next, i++);
 
-static object_t* list_iget(list_t* x, int64_t index) {
-	index = list_process_index(x, index);
+	return elem;
+}
 
-	if (index < 0) {
-		return NULL; // invalid index
+static inline object_t* _list_process_index_tail(list_t* x, int64_t index) {
+	object_t* elem = x->tail;
+
+	for (int64_t i = x->len - 1; elem && i != index; elem = elem->prev, i--);
+
+	return elem;
+}
+
+static inline object_t* _list_process_index(list_t* x, int64_t index) {
+	index += x->len * (index < 0); // wrap negative values
+
+	if (index < 0 || index >= x->len) {
+		return NULL; // index out of bounds
 	}
 
-	return x->elems[index];
+	if (index < x->len / 2) {
+		return _list_process_index_head(x, index);
+	}
+
+	else {
+		return _list_process_index_tail(x, index);
+	}
+}
+
+static object_t* list_iget(list_t* x, int64_t index) {
+	return list_process_index(x, index);
 }
 
 static int list_iset(list_t* x, int64_t index, object_t* y) {
@@ -163,26 +140,97 @@ static int list_iset(list_t* x, int64_t index, object_t* y) {
 		return -1; // NULL can't be an element
 	}
 
-	index = list_process_index(x, index);
+	object_t* elem = list_process_index(x, index);
 
-	if (index < 0) {
+	if (!elem) {
 		return -1; // invalid index
 	}
 
-	x->elems[index] = y;
+	if (elem->prev) {
+		elem->prev->next = y;
+		y->prev = elem->prev;
+	}
+
+	else {
+		x->head = y;
+		y->prev = NULL;
+	}
+
+	if (elem->next) {
+		elem->next->prev = y;
+		y->next = elem->next;
+	}
+
+	else {
+		x->tail = y;
+		y->next = NULL;
+	}
+
 	return 0;
 }
 
 // list-like type operators
 
-static inline int64_t list_process_index(list_t* x, int64_t index) {
-	index += x->len * (index < 0); // wrap negative values
-	
-	if (index < 0 || index >= x->len) {
-		return -1; // index out of bounds
+static inline int _list_insert_check_first(list_t* list, object_t* elem) {
+	if (list->head && list->tail) { // if head is NULL then tail should also be NULL in all cases but compare both just to make sure ...
+		return 0;
 	}
 
-	return index;
+	// first element in the list
+
+	list->head = elem;
+	list->tail = elem;
+
+	elem->prev = NULL;
+	elem->next = NULL;
+
+	return 1;
+}
+
+static inline int _list_insert_before(list_t* list, object_t* elem, object_t* target) {
+	list->len++;
+
+	if (_list_insert_check_first(list, elem)) {
+		return 0;
+	}
+
+	elem->next = target;
+
+	if (!target) { // insert at tail
+		elem->prev = list->tail;
+		list->tail->next = elem;
+		list->tail = elem;
+	}
+
+	else {
+		elem->prev = target->prev;
+		target->prev = elem;
+	}
+
+	return 0;
+}
+
+static inline int _list_insert_after(list_t* list, object_t* elem, object_t* target) {
+	list->len++;
+
+	if (_list_insert_check_first(list, elem)) {
+		return 0;
+	}
+
+	elem->prev = target;
+
+	if (!target) { // insert at head
+		elem->next = list->head;
+		list->head->prev = elem;
+		list->head = elem;
+	}
+
+	else {
+		elem->next = target->next;
+		target->next = elem;
+	}
+
+	return 0;
 }
 
 static int list_push(list_t* x, object_t* y) {
@@ -190,17 +238,46 @@ static int list_push(list_t* x, object_t* y) {
 		return -1; // NULL can't be an element
 	}
 
-	x->elems = realloc(x->elems, ++x->len * sizeof *x->elems);
-	x->elems[x->len - 1] = y;
+	return _list_insert_before(x, y, NULL);
+}
+
+static inline int _list_detach(list_t* list, object_t* elem) {
+	if (!list->head || !list->tail) { // something is wrong here; elem clearly isn't part of list (cf. second TODO at the top of this file)
+		return -1;
+	}
+
+	list->len--;
+
+	// was the element at the head or tail of the list?
+	// if not, stitch the previous/next element to the next/previous element in the list
+
+	if (list->tail == elem) {
+		list->tail = elem->prev;
+	}
+
+	else {
+		elem->next->prev = elem->prev;
+	}
+
+	if (list->head == elem) {
+		list->head = elem->next;
+	}
+
+	else {
+		elem->prev->next = elem->next;
+	}
 
 	return 0;
 }
 
 static object_t* list_pop(list_t* x) {
-	object_t* res = x->elems[--x->len];
-	x->elems = realloc(x->elems, x->len * sizeof *x->elems);
+	object_t* elem = x->tail;
 
-	return res;
+	if (_list_detach(x, elem) < 0) {
+		return NULL;
+	}
+
+	return elem;
 }
 
 // type object itself

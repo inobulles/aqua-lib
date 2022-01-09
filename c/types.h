@@ -32,6 +32,11 @@ struct object_t {
 
 	unsigned batch_i;
 	batch_t* batch;
+
+	// linked-list stuff
+
+	object_t* prev;
+	object_t* next;
 }; // abstract "class"
 
 // manatory types
