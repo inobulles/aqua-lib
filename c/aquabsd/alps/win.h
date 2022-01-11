@@ -10,6 +10,7 @@ typedef enum {
 
 typedef struct {
 	float x_pos, y_pos;
+	float width, height;
 	
 	unsigned x_res, y_res;
 	unsigned wm_x_res, wm_y_res;
@@ -79,6 +80,9 @@ void win_sync(win_t* win) {
 
 	win->wm_x_res = send_device(win_device, 0x7778, (uint64_t[]) { win->win });
 	win->wm_y_res = send_device(win_device, 0x7779, (uint64_t[]) { win->win });
+
+	win->width  = (float) win->x_res / win->wm_x_res;
+	win->height = (float) win->y_res / win->wm_y_res;
 }
 
 void win_close(win_t* win) {
