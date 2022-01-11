@@ -9,7 +9,8 @@ typedef enum {
 } win_cb_t;
 
 typedef struct {
-	int x_pos, y_pos;
+	float x_pos, y_pos;
+	
 	unsigned x_res, y_res;
 	unsigned wm_x_res, wm_y_res;
 
@@ -67,8 +68,11 @@ int win_loop(win_t* win) {
 }
 
 void win_sync(win_t* win) {
-	win->x_pos    = send_device(win_device, 0x7870, (uint64_t[]) { win->win });
-	win->y_pos    = send_device(win_device, 0x7970, (uint64_t[]) { win->win });
+	uint64_t x_pos = send_device(win_device, 0x7870, (uint64_t[]) { win->win });
+	uint64_t y_pos = send_device(win_device, 0x7970, (uint64_t[]) { win->win });
+
+	win->x_pos    = *(float*) &x_pos;
+	win->y_pos    = *(float*) &y_pos;
 
 	win->x_res    = send_device(win_device, 0x7872, (uint64_t[]) { win->win });
 	win->y_res    = send_device(win_device, 0x7972, (uint64_t[]) { win->win });
