@@ -3,6 +3,10 @@
 
 #include <aquabsd/alps/win.h>
 
+// note on WM_CB_CLICK: this callback is intended as a way to tell the WM device that a certain click was intended for the WM and not a client, based on its coordinates
+// this is *not* a way for the the WM to detect mouse presses and do event processing;
+// you should use the mouse device for that instead
+
 typedef enum {
 	WM_CB_CREATE,
 	WM_CB_SHOW,
