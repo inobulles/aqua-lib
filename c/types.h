@@ -39,7 +39,7 @@ struct object_t {
 	object_t* next;
 }; // abstract "class"
 
-// manatory types
+// mandatory types
 
 #include <types/stack_t.h>
 
