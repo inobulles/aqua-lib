@@ -115,4 +115,19 @@ int wm_provider_y_res(wm_t wm, unsigned id) {
 	return send_device(wm_device, 0x707B, (uint64_t[]) { wm, id });
 }
 
+// useful provider macros
+// yeah this BEGIN/END stuff is a bit ugly, but what can you do
+
+#define WM_ITERATE_PROVIDERS_BEGIN(wm) { \
+	int provider_count = wm_provider_count((wm)); \
+	\
+	while (provider_count --> 0) { \
+		int x = wm_provider_x((wm), provider_count); \
+		int y = wm_provider_y((wm), provider_count); \
+		\
+		int x_res = wm_provider_x_res((wm), provider_count); \
+		int y_res = wm_provider_y_res((wm), provider_count);
+
+#define WM_ITERATE_PROVIDERS_END }}
+
 #endif
