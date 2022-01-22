@@ -14,6 +14,7 @@ typedef enum {
 	WM_CB_MODIFY,
 	WM_CB_DELETE,
 	WM_CB_FOCUS,
+	WM_CB_STATE,
 	WM_CB_CLICK,
 	WM_CB_LEN
 } wm_cb_t;
