@@ -8,6 +8,11 @@ typedef enum {
 	WIN_CB_LEN
 } win_cb_t;
 
+typedef enum {
+	WIN_STATE_TRANSIENT  = 0b01,
+	WIN_STATE_FULLSCREEN = 0b10,
+} win_state_t;
+
 typedef struct {
 	float x_pos, y_pos;
 	float width, height;
@@ -58,6 +63,10 @@ void win_set_caption(win_t* win, const char* caption) {
 
 char* win_get_caption(win_t* win) {
 	return (char*) send_device(win_device, 0x6763, (uint64_t[]) { win->win });
+}
+
+win_state_t win_get_state(win_t* win) {
+	return send_device(win_device, 0x6773, (uint64_t[]) { win->win });
 }
 
 int win_register_cb(win_t* win, win_cb_t type, int (*cb) (uint64_t context, uint64_t param), void* param) {
