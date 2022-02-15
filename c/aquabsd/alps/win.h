@@ -121,4 +121,14 @@ unsigned win_supports_dwd(win_t* win) {
 	return send_device(win_device, 0x3D63, (uint64_t[]) { win->win });
 }
 
+float win_get_dwd_close_pos_x(win_t* win) {
+	uint64_t x = send_device(win_device, 0x3D78, (uint64_t[]) { win->win });
+	return *(float*) &x;
+}
+
+float win_get_dwd_close_pos_y(win_t* win) {
+	uint64_t y = send_device(win_device, 0x3D79, (uint64_t[]) { win->win });
+	return *(float*) &y;
+}
+
 #endif
