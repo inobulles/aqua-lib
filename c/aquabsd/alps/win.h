@@ -111,4 +111,10 @@ void win_delete(win_t* win) {
 	free(win);
 }
 
+// AQUA DWD protocol stuff
+
+void win_set_dwd_close_pos(win_t* win, float x, float y) {
+	send_device(win_device, 0x2D78, (uint64_t[]) { win->win, *(uint64_t*) &x, *(uint64_t*) &y });
+}
+
 #endif
