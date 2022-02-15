@@ -117,4 +117,8 @@ void win_set_dwd_close_pos(win_t* win, float x, float y) {
 	send_device(win_device, 0x2D78, (uint64_t[]) { win->win, *(uint64_t*) &x, *(uint64_t*) &y });
 }
 
+unsigned win_supports_dwd(win_t* win) {
+	return send_device(win_device, 0x3D63, (uint64_t[]) { win->win });
+}
+
 #endif
