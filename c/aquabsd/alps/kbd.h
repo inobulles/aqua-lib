@@ -2,6 +2,7 @@
 #define __AQUA_LIB__AQUABSD_ALPS_KBD
 
 #include <root.h>
+#include <stdbool.h>
 
 // TODO error handling
 
@@ -19,6 +20,8 @@ typedef enum {
 static device_t kbd_device = -1;
 typedef uint64_t kbd_t;
 
+static bool kbd_state[KBD_BUTTON_LEN] = { false };
+
 kbd_t kbd_get_default(void) {
 	if (kbd_device == -1) {
 		kbd_device = query_device("aquabsd.alps.kbd");
@@ -33,6 +36,20 @@ int kbd_update(kbd_t kbd) {
 
 unsigned kbd_poll_button(kbd_t kbd, kbd_button_t button) {
 	return send_device(kbd_device, 0x7062, (uint64_t[]) { kbd, button });
+}
+
+unsigned kbd_button_down(kbd_t kbd, kbd_button_t button) {
+	bool pressed = kbd_poll_button(kbd, button);
+
+	if (pressed) {
+		bool rv = !kbd_state[button];
+		kbd_state[button] = true;
+
+		return rv;
+	}
+
+	kbd_state[button] = false;
+	return false;
 }
 
 unsigned kbd_buf_len(kbd_t kbd) {
