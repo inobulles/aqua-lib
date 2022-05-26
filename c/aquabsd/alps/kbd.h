@@ -8,6 +8,7 @@
 
 typedef enum {
 	KBD_BUTTON_ESC,
+	KBD_BUTTON_TAB,
 
 	KBD_BUTTON_UP,
 	KBD_BUTTON_DOWN,
