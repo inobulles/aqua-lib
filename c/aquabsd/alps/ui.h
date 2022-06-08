@@ -229,7 +229,7 @@ static int ui_setup_ogl_wm(ui_context_t* context) {
 	context->type = UI_DISPLAY_OGL_WM;
 
 	context->ogl.context = ogl_create_wm_context();
-	
+
 	if (context->ogl.context) {
 		context->ogl.wm = context->ogl.context->target.wm;
 	}
@@ -358,7 +358,7 @@ ui_element_t _ui_add_svg(ui_element_t parent, svg_t svg, ui_value_t height, unsi
 
 ui_element_t ui_add_svg(ui_element_t parent, const char* path, ui_value_t height, unsigned themeable) {
 	// wrapper around _ui_add_svg to be able to pass in a path instead of SVG
-	
+
 	svg_t svg = svg_load(path);
 	return _ui_add_svg(parent, svg, height, themeable);
 }
@@ -423,8 +423,8 @@ void ui_set_svg(ui_element_t svg_element, const char* path, ui_value_t height) {
 
 // element property setting functions
 
-void ui_set_visibility(ui_element_t element, unsigned visibility, unsigned wind_up_backwards) {
-	send_device(ui_device, 0x7376, (uint64_t[]) { element, visibility, wind_up_backwards });
+void ui_set_visibility(ui_element_t element, unsigned visibility, unsigned windup_dir) {
+	send_device(ui_device, 0x7376, (uint64_t[]) { element, visibility, *(uint64_t*) &windup_dir });
 }
 
 void ui_set_grid(ui_element_t section, unsigned grid_x, unsigned grid_y) {
@@ -433,6 +433,10 @@ void ui_set_grid(ui_element_t section, unsigned grid_x, unsigned grid_y) {
 
 void ui_set_sticky(ui_element_t element, unsigned sticky) {
 	send_device(ui_device, 0x7373, (uint64_t[]) { element, sticky });
+}
+
+void ui_set_gobbler(ui_element_t element, unsigned gobbler) {
+	send_device(ui_device, 0x6762, (uint64_t[]) { element, gobbler });
 }
 
 void ui_set_abs(ui_element_t element, unsigned abs, ui_value_t x, ui_value_t y) {
