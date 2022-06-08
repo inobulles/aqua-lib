@@ -423,8 +423,12 @@ void ui_set_svg(ui_element_t svg_element, const char* path, ui_value_t height) {
 
 // element property setting functions
 
-void ui_set_visibility(ui_element_t element, unsigned visibility, unsigned windup_dir) {
+void ui_set_visibility(ui_element_t element, unsigned visibility, float windup_dir) {
 	send_device(ui_device, 0x7376, (uint64_t[]) { element, visibility, *(uint64_t*) &windup_dir });
+}
+
+void ui_set_windup(ui_element_t element, float scale, ui_value_t x, ui_value_t y) {
+	send_device(ui_device, 0x7377, (uint64_t[]) { element, *(uint64_t*) &scale, x.unit, *(uint64_t*) &x.val, y.unit, *(uint64_t*) &y.val });
 }
 
 void ui_set_grid(ui_element_t section, unsigned grid_x, unsigned grid_y) {
