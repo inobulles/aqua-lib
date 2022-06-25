@@ -5,6 +5,7 @@
 
 typedef enum {
 	WIN_CB_DRAW,
+	WIN_CB_RESIZE,
 	WIN_CB_LEN
 } win_cb_t;
 
@@ -16,7 +17,7 @@ typedef enum {
 typedef struct {
 	float x_pos, y_pos;
 	float width, height;
-	
+
 	unsigned x_res, y_res;
 	unsigned wm_x_res, wm_y_res;
 
@@ -41,7 +42,7 @@ win_t* win_create(unsigned x_res, unsigned y_res) {
 	if (win_init() < 0) {
 		return NULL;
 	}
-	
+
 	win_t* win = calloc(1, sizeof *win);
 
 	win->x_res = x_res;
