@@ -34,37 +34,29 @@ int fs_init(void) {
 	return 0;
 }
 
-// TODO doesn't it only make sense to "call" 'FS_INIT' in 'fs_open'?
+// command wrapper functions
 
-#define FS_INIT \
+fs_descr_t fs_open(const char* drive, const char* path, fs_flags_t flags) {
 	if (fs_init() < 0) { \
 		return FS_ERR_GENERIC; \
 	}
 
-// command wrapper functions
-
-fs_descr_t fs_open(const char* drive, const char* path, fs_flags_t flags) {
-	FS_INIT
 	return (fs_descr_t) send_device(fs_device, 0x6F70, (uint64_t[]) { (uint64_t) drive, (uint64_t) path, flags });
 }
 
 fs_err_t fs_close(fs_descr_t descr) {
-	FS_INIT
 	return send_device(fs_device, 0x636C, (uint64_t[]) { descr });
 }
 
 void* fs_mmap(fs_descr_t descr) {
-	FS_INIT
 	return send_device(fs_device, 0x6D6D, (uint64_t[]) { descr });
 }
 
 fs_err_t fs_read(fs_descr_t descr, void* buf, size_t len) {
-	FS_INIT
 	return send_device(fs_device, 0x7264, (uint64_t[]) { descr, (uint64_t) buf, len });
 }
 
 fs_err_t fs_write(fs_descr_t descr, const void* buf, size_t len) {
-	FS_INIT
 	return send_device(fs_device, 0x7772, (uint64_t[]) { descr, (uint64_t) buf, len });
 }
 
