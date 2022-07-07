@@ -34,6 +34,8 @@ int fs_init(void) {
 	return 0;
 }
 
+// TODO doesn't it only make sense to "call" 'FS_INIT' in 'fs_open'?
+
 #define FS_INIT \
 	if (fs_init() < 0) { \
 		return FS_ERR_GENERIC; \
@@ -49,6 +51,11 @@ fs_descr_t fs_open(const char* drive, const char* path, fs_flags_t flags) {
 fs_err_t fs_close(fs_descr_t descr) {
 	FS_INIT
 	return send_device(fs_device, 0x636C, (uint64_t[]) { descr });
+}
+
+void* fs_mmap(fs_descr_t descr) {
+	FS_INIT
+	return send_device(fs_device, 0x6D6D, (uint64_t[]) { descr });
 }
 
 fs_err_t fs_read(fs_descr_t descr, void* buf, size_t len) {
