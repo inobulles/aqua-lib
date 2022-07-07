@@ -46,8 +46,12 @@ fs_err_t fs_close(fs_descr_t descr) {
 	return send_device(fs_device, 0x636C, (uint64_t[]) { descr });
 }
 
+uint64_t fs_size(fs_descr_t descr) {
+	return send_device(fs_device, 0x737A, (uint64_t[]) { descr });
+}
+
 void* fs_mmap(fs_descr_t descr) {
-	return send_device(fs_device, 0x6D6D, (uint64_t[]) { descr });
+	return (void*) send_device(fs_device, 0x6D6D, (uint64_t[]) { descr });
 }
 
 fs_err_t fs_read(fs_descr_t descr, void* buf, size_t len) {
