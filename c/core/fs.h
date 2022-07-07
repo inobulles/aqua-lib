@@ -6,13 +6,11 @@
 typedef uint64_t fs_descr_t;
 
 typedef enum {
-	FS_FLAGS_READ   = 0b000001,
-	FS_FLAGS_WRITE  = 0b000010,
-	FS_FLAGS_EXEC   = 0b000100,
-	FS_FLAGS_APPEND = 0b001000,
-
-	FS_FLAGS_CREATE = 0b010000,
-	FS_FLAGS_STREAM = 0b100000,
+	FS_FLAGS_READ   = 0b00001,
+	FS_FLAGS_WRITE  = 0b00010,
+	FS_FLAGS_EXEC   = 0b00100,
+	FS_FLAGS_APPEND = 0b01000,
+	FS_FLAGS_CREATE = 0b10000,
 } fs_flags_t;
 
 typedef enum {
