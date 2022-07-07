@@ -36,7 +36,7 @@ int fs_init(void) {
 
 fs_descr_t fs_open(const char* drive, const char* path, fs_flags_t flags) {
 	if (fs_init() < 0) { \
-		return FS_ERR_GENERIC; \
+		return 0; \
 	}
 
 	return (fs_descr_t) send_device(fs_device, 0x6F70, (uint64_t[]) { (uint64_t) drive, (uint64_t) path, flags });
