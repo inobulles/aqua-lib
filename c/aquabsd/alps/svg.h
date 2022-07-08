@@ -2,6 +2,7 @@
 #define __AQUA_LIB__AQUABSD_ALPS_SVG
 
 #include <root.h>
+#include <core/fs.h>
 
 static device_t svg_device = -1;
 typedef uint64_t svg_t;
@@ -18,12 +19,16 @@ int svg_init(void) {
 	return 0;
 }
 
-svg_t svg_load(const char* path) {
+svg_t svg_load(const char* drive, const char* path) {
 	if (svg_init() < 0) {
 		return 0;
 	}
 
-	return send_device(svg_device, 0x6C73, (uint64_t[]) { (uint64_t) path });
+	fs_descr_t file = fs_open(drive, path, FS_FLAGS_READ);
+	svg_t svg = send_device(svg_device, 0x6C73, (uint64_t[]) { (uint64_t) fs_mmap(file) });
+
+	fs_close(file);
+	return svg;
 }
 
 svg_t svg_load_cstr(const char* cstr) {
@@ -31,7 +36,7 @@ svg_t svg_load_cstr(const char* cstr) {
 		return 0;
 	}
 
-	return send_device(svg_device, 0x6C64, (uint64_t[]) { (uint64_t) cstr });
+	return send_device(svg_device, 0x6C73, (uint64_t[]) { (uint64_t) cstr });
 }
 
 int svg_draw(svg_t svg, uint64_t size, uint8_t** bitmap_reference, uint64_t* width_reference, uint64_t* height_reference) {

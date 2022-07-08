@@ -356,10 +356,10 @@ ui_element_t _ui_add_svg(ui_element_t parent, svg_t svg, ui_value_t height, unsi
 	return send_device(ui_device, 0x6165, (uint64_t[]) { parent, UI_ELEMENT_SVG, svg, height.unit, *(uint64_t*) &height.val, themeable });
 }
 
-ui_element_t ui_add_svg(ui_element_t parent, const char* path, ui_value_t height, unsigned themeable) {
+ui_element_t ui_add_svg(ui_element_t parent, const char* drive, const char* path, ui_value_t height, unsigned themeable) {
 	// wrapper around _ui_add_svg to be able to pass in a path instead of SVG
 
-	svg_t svg = svg_load(path);
+	svg_t svg = svg_load(drive, path);
 	return _ui_add_svg(parent, svg, height, themeable);
 }
 
@@ -416,8 +416,8 @@ void ui_set_text(ui_element_t text_element, const char* text) {
 	send_device(ui_device, 0x7364, (uint64_t[]) { text_element, (uint64_t) text });
 }
 
-void ui_set_svg(ui_element_t svg_element, const char* path, ui_value_t height) {
-	svg_t svg = svg_load(path);
+void ui_set_svg(ui_element_t svg_element, const char* drive, const char* path, ui_value_t height) {
+	svg_t svg = svg_load(drive, path);
 	send_device(ui_device, 0x7364, (uint64_t[]) { svg_element, svg, height.unit, *(uint64_t*) &height.val });
 }
 
