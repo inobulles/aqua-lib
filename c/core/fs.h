@@ -35,8 +35,8 @@ int fs_init(void) {
 // command wrapper functions
 
 fs_descr_t fs_open(const char* drive, const char* path, fs_flags_t flags) {
-	if (fs_init() < 0) { \
-		return 0; \
+	if (fs_init() < 0) {
+		return 0;
 	}
 
 	return (fs_descr_t) send_device(fs_device, 0x6F70, (uint64_t[]) { (uint64_t) drive, (uint64_t) path, flags });
@@ -50,8 +50,8 @@ uint64_t fs_size(fs_descr_t descr) {
 	return send_device(fs_device, 0x737A, (uint64_t[]) { descr });
 }
 
-void* fs_mmap(fs_descr_t descr) {
-	return (void*) send_device(fs_device, 0x6D6D, (uint64_t[]) { descr });
+void* fs_mmap(fs_descr_t descr, fs_flags_t flags) {
+	return (void*) send_device(fs_device, 0x6D6D, (uint64_t[]) { descr, flags });
 }
 
 fs_err_t fs_read(fs_descr_t descr, void* buf, size_t len) {
