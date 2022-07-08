@@ -369,10 +369,10 @@ ui_element_t _ui_add_image(ui_element_t parent, png_t image, ui_value_t width, u
 	return send_device(ui_device, 0x6165, (uint64_t[]) { parent, UI_ELEMENT_IMAGE, image, width.unit, *(uint64_t*) &width.val, height.unit, *(uint64_t*) &height.val });
 }
 
-ui_element_t ui_add_image(ui_element_t parent, const char* path, ui_value_t width, ui_value_t height) {
+ui_element_t ui_add_image(ui_element_t parent, const char* drive, const char* path, ui_value_t width, ui_value_t height) {
 	// wrapper around _ui_add_image to be able to pass in a path instead of image object
 
-	png_t png = png_load(path);
+	png_t png = png_load(drive, path);
 	return _ui_add_image(parent, png, width, height);
 }
 

@@ -19,24 +19,24 @@ int svg_init(void) {
 	return 0;
 }
 
-svg_t svg_load(const char* drive, const char* path) {
-	if (svg_init() < 0) {
-		return 0;
-	}
-
-	fs_descr_t file = fs_open(drive, path, FS_FLAGS_READ);
-	svg_t svg = send_device(svg_device, 0x6C73, (uint64_t[]) { (uint64_t) fs_mmap(file) });
-
-	fs_close(file);
-	return svg;
-}
-
 svg_t svg_load_cstr(const char* cstr) {
 	if (svg_init() < 0) {
 		return 0;
 	}
 
 	return send_device(svg_device, 0x6C73, (uint64_t[]) { (uint64_t) cstr });
+}
+
+svg_t svg_load(const char* drive, const char* path) {
+	if (svg_init() < 0) {
+		return 0;
+	}
+
+	fs_descr_t file = fs_open(drive, path, FS_FLAGS_READ);
+	svg_t svg = svg_load_cstr((const char*) fs_mmap(file));
+
+	fs_close(file);
+	return svg;
 }
 
 int svg_draw(svg_t svg, uint64_t size, uint8_t** bitmap_reference, uint64_t* width_reference, uint64_t* height_reference) {
