@@ -18,14 +18,10 @@ png_t png_load_ptr(void* ptr) {
 }
 
 png_t png_load(const char* drive, const char* path) {
-	if (png_device == -1) {
-		png_device = query_device("aquabsd.alps.png");
-	}
-
 	fs_descr_t file = fs_open(drive, path, FS_FLAGS_READ);
 	png_t png = png_load_ptr(fs_mmap(file));
 
-	fs_close(file);
+	// fs_close(file);
 	return png;
 }
 

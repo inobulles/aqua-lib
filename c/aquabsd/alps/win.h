@@ -70,7 +70,7 @@ win_state_t win_get_state(win_t* win) {
 	return send_device(win_device, 0x6773, (uint64_t[]) { win->win });
 }
 
-int win_register_cb(win_t* win, win_cb_t type, int (*cb) (uint64_t context, uint64_t param), void* param) {
+int win_register_cb(win_t* win, win_cb_t type, int (*cb) (), void* param) {
 	return send_device(win_device, 0x7263, (uint64_t[]) { win->win, type, (uint64_t) cb, (uint64_t) param });
 }
 
