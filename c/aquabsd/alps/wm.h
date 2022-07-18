@@ -72,6 +72,10 @@ win_t* wm_get_root(wm_t wm) {
 	return win;
 }
 
+char* wm_get_cursor(wm_t wm) {
+	return (char*) send_device(wm_device, 0x6475, (uint64_t[]) { wm });
+}
+
 void wm_set_name(wm_t wm, const char* name) {
 	send_device(wm_device, 0x736E, (uint64_t[]) { wm, (uint64_t) name });
 }
