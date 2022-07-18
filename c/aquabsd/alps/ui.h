@@ -60,6 +60,7 @@ typedef enum {
 
 	UI_ELEMENT_BUTTON,
 	UI_ELEMENT_RADIO,
+	UI_ELEMENT_ENTRY,
 
 	UI_ELEMENT_SVG,
 	UI_ELEMENT_IMAGE,
@@ -345,6 +346,8 @@ __UI_ADD_TEXT_FUNC(button,    BUTTON)
 ui_element_t ui_add_radio(ui_element_t parent, unsigned default_selection, unsigned count, const char* entries[count]) {
 	return send_device(ui_device, 0x6165, (uint64_t[]) { parent, UI_ELEMENT_RADIO, default_selection, count, (uint64_t) entries });
 }
+
+__UI_ADD_TEXT_FUNC(entry, ENTRY)
 
 // TODO goes for both SVG's and images, but make sure the UI device ends up freeing those objects to prevent memory leaks
 
