@@ -76,6 +76,16 @@ char* wm_get_cursor(wm_t wm) {
 	return (char*) send_device(wm_device, 0x6475, (uint64_t[]) { wm });
 }
 
+float wm_get_cursor_xhot(wm_t wm) {
+	uint64_t xhot = send_device(wm_device, 0x7868, (uint64_t[]) { wm });
+	return *(float*) &xhot;
+}
+
+float wm_get_cursor_yhot(wm_t wm) {
+	uint64_t yhot = send_device(wm_device, 0x7968, (uint64_t[]) { wm });
+	return *(float*) &yhot;
+}
+
 void wm_set_name(wm_t wm, const char* name) {
 	send_device(wm_device, 0x736E, (uint64_t[]) { wm, (uint64_t) name });
 }
