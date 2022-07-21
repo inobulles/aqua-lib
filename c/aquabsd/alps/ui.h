@@ -5,6 +5,7 @@
 
 #include <aquabsd/alps/svg.h>
 #include <aquabsd/alps/mouse.h>
+#include <aquabsd/alps/kbd.h>
 
 // TODO find some way to create a generic image object between the library & devices
 //      see also ui_add_image, where png_load could be replaced by a generic img_load, which would use the correct format to load the image in question
@@ -120,6 +121,7 @@ typedef struct {
 	ui_element_t root;
 
 	mouse_t mouse;
+	kbd_t kbd;
 
 	union {
 #if defined(UI_VGA_SUPPORT)
@@ -286,10 +288,13 @@ ui_context_t* ui_create(ui_display_type_t hint) {
 
 found:
 
-	// handle input (give mouse)
+	// handle input (give mouse & keyboard)
 
 	context->mouse = mouse_get_default();
 	send_device(ui_device, 0x676D, (uint64_t[]) { context->context, context->mouse });
+
+	context->kbd = kbd_get_default();
+	send_device(ui_device, 0x676B, (uint64_t[]) { context->context, context->kbd });
 
 	// do any generic things that still need to be done
 
