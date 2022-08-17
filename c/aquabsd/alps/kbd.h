@@ -37,7 +37,7 @@ unsigned kbd_keys_len(kbd_t kbd) {
 	return send_device(kbd_device, 0x6B6C, (uint64_t[]) { kbd });
 }
 
-int kbd_read_keys(kbd_t kbd, char* buf) { // expecting 'buf' to be 'kbd_buf_len(kbd)' wide
+int kbd_read_keys(kbd_t kbd, const char** keys) { // expecting 'keys' to be 'kbd_keys_len(kbd) * sizeof(const char*)' wide
 	return send_device(kbd_device, 0x726B, (uint64_t[]) { kbd, (uint64_t) buf });
 }
 
