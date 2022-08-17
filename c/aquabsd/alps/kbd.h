@@ -6,19 +6,6 @@
 
 // TODO error handling
 
-typedef enum {
-	KBD_BUTTON_ESC,
-	KBD_BUTTON_TAB,
-	KBD_BUTTON_SUPER,
-
-	KBD_BUTTON_UP,
-	KBD_BUTTON_DOWN,
-	KBD_BUTTON_LEFT,
-	KBD_BUTTON_RIGHT,
-
-	KBD_BUTTON_LEN
-} kbd_button_t;
-
 static device_t kbd_device = -1;
 typedef uint64_t kbd_t;
 
@@ -34,7 +21,7 @@ int kbd_update(kbd_t kbd) {
 	return (int) send_device(kbd_device, 0x756B, (uint64_t[]) { kbd });
 }
 
-unsigned kbd_poll_button(kbd_t kbd, kbd_button_t button) {
+unsigned kbd_poll_button(kbd_t kbd, unsigned button) {
 	return send_device(kbd_device, 0x7062, (uint64_t[]) { kbd, button });
 }
 
@@ -56,9 +43,9 @@ int kbd_read_keys(kbd_t kbd, char* buf) { // expecting 'buf' to be 'kbd_buf_len(
 
 // helper functions (which wrap regular device commands)
 
-static bool kbd_state[KBD_BUTTON_LEN] = { false };
+static bool kbd_state[256] = { false };
 
-unsigned kbd_button_down(kbd_t kbd, kbd_button_t button) {
+unsigned kbd_button_down(kbd_t kbd, unsigned button) {
 	bool pressed = kbd_poll_button(kbd, button);
 
 	if (pressed) {
