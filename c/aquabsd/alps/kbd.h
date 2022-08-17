@@ -46,6 +46,14 @@ int kbd_read_buf(kbd_t kbd, char* buf) { // expecting 'buf' to be 'kbd_buf_len(k
 	return send_device(kbd_device, 0x7262, (uint64_t[]) { kbd, (uint64_t) buf });
 }
 
+unsigned kbd_keys_len(kbd_t kbd) {
+	return send_device(kbd_device, 0x6B6C, (uint64_t[]) { kbd });
+}
+
+int kbd_read_keys(kbd_t kbd, char* buf) { // expecting 'buf' to be 'kbd_buf_len(kbd)' wide
+	return send_device(kbd_device, 0x726B, (uint64_t[]) { kbd, (uint64_t) buf });
+}
+
 // helper functions (which wrap regular device commands)
 
 static bool kbd_state[KBD_BUTTON_LEN] = { false };
