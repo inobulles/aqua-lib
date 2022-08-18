@@ -64,19 +64,27 @@ bool kbd_eq(const char* x, const char* y) {
 }
 
 bool kbd_bit(const char* __haystack, const char* needle) {
-	char* haystack = (char*) __haystack;
+	bool rv = false;
+
+	char* haystack = strdup(__haystack);
 	char* tok;
 
 	while ((tok = strsep(&haystack, "."))) {
 		if (!strcmp(tok, needle)) {
-			return true;
+			continue;
 		}
+
+		rv = true;
+		goto done;
 	}
 
-	return false;
+done:
+
+	free(haystack);
+	return rv;
 }
 
-bool kbd_poll_key(kbd_t kbd, const char* needle, bool (*cmp_fn) (const char*, const char*)) {
+bool kbd_poll_key_cmp_fn(kbd_t kbd, const char* needle, bool (*cmp_fn) (const char*, const char*)) {
 	size_t len = kbd_keys_len(kbd);
 	const char** keys = kbd_get_keys(kbd);
 
@@ -89,6 +97,10 @@ bool kbd_poll_key(kbd_t kbd, const char* needle, bool (*cmp_fn) (const char*, co
 	}
 
 	return false;
+}
+
+bool kbd_poll_key(kbd_t kbd, const char* key) {
+	return kbd_poll_key_cmp_fn(kbd, key, kbd_eq);
 }
 
 #endif
