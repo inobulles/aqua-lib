@@ -75,10 +75,8 @@ bool kbd_bit(const char* __haystack, const char* needle) {
 		}
 
 		rv = true;
-		goto done;
+		break;
 	}
-
-done:
 
 	free(haystack);
 	return rv;
