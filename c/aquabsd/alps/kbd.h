@@ -59,4 +59,36 @@ unsigned kbd_button_down(kbd_t kbd, unsigned button) {
 	return false;
 }
 
+bool kbd_eq(const char* x, const char* y) {
+	return !strcmp(x, y);
+}
+
+bool kbd_bit(const char* __haystack, const char* needle) {
+	char* haystack = (char*) __haystack;
+	char* tok;
+
+	while ((tok = strsep(&haystack, "."))) {
+		if (!strcmp(tok, needle)) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+bool kbd_poll_key(kbd_t kbd, const char* needle, bool (*cmp_fn) (const char*, const char*)) {
+	size_t len = kbd_keys_len(kbd);
+	const char** keys = kbd_get_keys(kbd);
+
+	for (size_t i = 0; i < len; i++) {
+		const char* key = keys[i];
+
+		if (cmp_fn(key, needle)) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
 #endif
