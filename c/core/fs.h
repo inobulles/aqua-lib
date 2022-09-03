@@ -1,7 +1,7 @@
 #if !defined(__AQUA_LIB__CORE_FS)
 #define __AQUA_LIB__CORE_FS
 
-#include <root.h>
+#include "../root.h"
 
 typedef uint64_t fs_descr_t;
 
@@ -43,7 +43,7 @@ fs_descr_t fs_open(const char* drive, const char* path, fs_flags_t flags) {
 }
 
 fs_err_t fs_close(fs_descr_t descr) {
-	return send_device(fs_device, 0x636C, (uint64_t[]) { descr });
+	return (fs_err_t) send_device(fs_device, 0x636C, (uint64_t[]) { descr });
 }
 
 uint64_t fs_size(fs_descr_t descr) {
@@ -55,11 +55,11 @@ void* fs_mmap(fs_descr_t descr) {
 }
 
 fs_err_t fs_read(fs_descr_t descr, void* buf, size_t len) {
-	return send_device(fs_device, 0x7264, (uint64_t[]) { descr, (uint64_t) buf, len });
+	return (fs_err_t) send_device(fs_device, 0x7264, (uint64_t[]) { descr, (uint64_t) buf, len });
 }
 
 fs_err_t fs_write(fs_descr_t descr, const void* buf, size_t len) {
-	return send_device(fs_device, 0x7772, (uint64_t[]) { descr, (uint64_t) buf, len });
+	return (fs_err_t) send_device(fs_device, 0x7772, (uint64_t[]) { descr, (uint64_t) buf, len });
 }
 
 // helper functions

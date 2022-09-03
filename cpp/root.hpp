@@ -2,8 +2,8 @@
 
 #include <iostream>
 
-namespace aqua {
+namespace aqua_libc {
 	extern "C" {
-		#include "../c/root.h"
+		#include <../c/root.h>
 	}
 }
