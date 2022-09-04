@@ -139,6 +139,10 @@ namespace aqua::aquabsd::alps::ui {
 
 			aqua_libc::ui_set_abs(element, abs, c_x, c_y);
 		}
+
+		void set_anchor(float x, float y) {
+			aqua_libc::ui_set_anchor(element, x, y);
+		}
 	};
 
 	struct Section : Element {
