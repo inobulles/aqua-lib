@@ -1,6 +1,7 @@
 #pragma once
 
 #include <root.hpp>
+#include <vector>
 
 namespace aqua_libc {
 	extern "C" {
@@ -120,8 +121,22 @@ namespace aqua::aquabsd::alps::ui {
 	TEXT_CLASS(Paragraph, PARAGRAPH)
 	TEXT_CLASS(Log,       LOG)
 	TEXT_CLASS(Button,    BUTTON)
+	TEXT_CLASS(Entry,     ENTRY)
 
 	#undef TEXT_CLASS
+
+	struct Radio : Element {
+		Radio(Element& parent, unsigned default_selection, std::vector<std::string>& entries) {
+			size_t count = entries.size();
+			const char* c_entries[count];
+
+			for (size_t i = 0; i < count; i++) {
+				c_entries[i] = entries[i].c_str();
+			}
+
+			element = aqua_libc::ui_add_radio(parent.element, default_selection, count, c_entries);
+		}
+	};
 
 	// context stuff
 

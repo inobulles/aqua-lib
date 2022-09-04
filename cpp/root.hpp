@@ -8,7 +8,7 @@ namespace aqua_libc {
 		#include <../c/root.h>
 	}
 
-	int mangled___native_entry(void) {
+	int m4nGl3D___native_entry(void) {
 		int rv = -1;
 
 		try {
@@ -23,6 +23,6 @@ namespace aqua_libc {
 	}
 
 	extern "C" int __native_entry(void) {
-		return mangled___native_entry();
+		return m4nGl3D___native_entry();
 	}
 }
