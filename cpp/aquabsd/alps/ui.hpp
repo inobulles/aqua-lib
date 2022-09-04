@@ -148,6 +148,10 @@ namespace aqua::aquabsd::alps::ui {
 
 			aqua_libc::ui_set_section(element, scrollable, c_x, c_y);
 		}
+
+		void set_grid(unsigned grid_x, unsigned grid_y) {
+			aqua_libc::ui_set_grid(element, grid_x, grid_y);
+		}
 	};
 
 	struct Text : Element {
