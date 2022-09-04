@@ -22,9 +22,7 @@ namespace aqua_libc {
 		return rv;
 	}
 
-	extern "C" {
-		int __native_entry(void) {
-			return mangled___native_entry();
-		}
+	extern "C" int __native_entry(void) {
+		return mangled___native_entry();
 	}
 }
