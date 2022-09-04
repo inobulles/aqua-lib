@@ -169,6 +169,13 @@ namespace aqua::aquabsd::alps::ui {
 
 			aqua_libc::ui_set_padding(element, c_left, c_right, c_top, c_bottom);
 		}
+
+		void set_scroll(Val x, Val y) {
+			auto c_x = static_cast<aqua_libc::ui_value_t>(x);
+			auto c_y = static_cast<aqua_libc::ui_value_t>(y);
+
+			aqua_libc::ui_set_scroll(element, c_x, c_y);
+		}
 	};
 
 	struct Section : Element {
