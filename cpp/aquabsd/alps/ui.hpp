@@ -111,6 +111,19 @@ namespace aqua::aquabsd::alps::ui {
 		void clear_children(void) {
 			aqua_libc::ui_clear_children(element);
 		}
+
+		// element property setting functions
+
+		void set_visibility(bool visibility, float windup_dir) {
+			aqua_libc::ui_set_visibility(element, visibility, windup_dir);
+		}
+
+		void set_windup(float scale, Val x, Val y) {
+			auto c_x = static_cast<aqua_libc::ui_value_t>(x);
+			auto c_y = static_cast<aqua_libc::ui_value_t>(y);
+
+			aqua_libc::ui_set_windup(element, scale, c_x, c_y);
+		}
 	};
 
 	struct Section : Element {
