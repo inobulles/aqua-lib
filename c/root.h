@@ -45,9 +45,11 @@ uint64_t send_device(device_t device, uint16_t cmd, void* data) {
 
 int main(void);
 
+#if !defined(NO_ENTRY)
 int __native_entry(void) {
 	int rv = main();
 	return rv;
 }
+#endif
 
 #endif

@@ -16,7 +16,7 @@ namespace aqua::core::fs {
 	};
 
 	inline Flags operator |(Flags a, Flags b) {
-		return static_cast<Flags>(a | b);
+		return static_cast<Flags>(static_cast<int>(a) | static_cast<int>(b));
 	}
 
 	class Generic_error : public std::exception {
@@ -27,8 +27,8 @@ namespace aqua::core::fs {
 		Generic_error(std::string msg) : msg(msg) {
 		}
 
-		std::string what(void) {
-			return "Generic AQUA filesystem error: " + this->msg;
+		const char* what(void) const noexcept {
+			return this->msg.c_str();
 		}
 	};
 
