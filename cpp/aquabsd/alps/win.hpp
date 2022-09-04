@@ -58,7 +58,17 @@ namespace aqua::aquabsd::alps::win {
 			}
 		}
 
+		Win(aqua_libc::win_t* win) : win(win) {
+		}
+
+		Win() {
+		}
+
 		~Win() {
+			if (!win) {
+				return;
+			}
+
 			aqua_libc::win_delete(win);
 		}
 
@@ -80,6 +90,14 @@ namespace aqua::aquabsd::alps::win {
 			if (aqua_libc::win_register_cb(win, c_type, cb, param) < 0) {
 				throw Generic_error("Failed to register window callback");
 			}
+		}
+
+		void register_cb(Cb type, int (*cb) (uint64_t, uint64_t, uint64_t), void* param) {
+			this->register_cb(type, reinterpret_cast<int (*) ()>(cb), param);
+		}
+
+		void register_cb(Cb type, int (*cb) (uint64_t, uint64_t, uint64_t, uint64_t), void* param) {
+			this->register_cb(type, reinterpret_cast<int (*) ()>(cb), param);
 		}
 
 		void loop(void) {
