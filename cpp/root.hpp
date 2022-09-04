@@ -16,7 +16,7 @@ namespace aqua_libc {
 		}
 
 		catch (std::exception& e) {
-			std::cout << "[C++ AQUA library] UNHANDLED EXCEPTION: " << e.what() << std::endl;
+			std::cerr << "[C++ AQUA library] UNHANDLED EXCEPTION: " << e.what() << std::endl;
 		}
 
 		return rv;
