@@ -103,6 +103,20 @@ namespace aqua::aquabsd::alps::ui {
 		}
 	};
 
+	#define TEXT_CLASS(Name, CAPITAL) \
+		struct Name : Text { \
+			Name(Element& parent, std::string text) : Text(parent, ELEMENT_##CAPITAL, text) { \
+			} \
+		};
+
+	TEXT_CLASS(Title,     TITLE)
+	TEXT_CLASS(Subtitle,  SUBTITLE)
+	TEXT_CLASS(Paragraph, PARAGRAPH)
+	TEXT_CLASS(Log,       LOG)
+	TEXT_CLASS(Button,    BUTTON)
+
+	#undef TEXT_CLASS
+
 	// context stuff
 
 	enum Display_type {

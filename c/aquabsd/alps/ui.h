@@ -339,22 +339,24 @@ ui_element_t ui_add_text(ui_element_t parent, ui_element_type_t type, const char
 	return send_device(ui_device, 0x6165, (uint64_t[]) { parent, type, (uint64_t) text });
 }
 
-#define __UI_ADD_TEXT_FUNC(name, capital) \
+#define TEXT_FUNC(name, CAPITAL) \
 	ui_element_t ui_add_##name(ui_element_t parent, const char* text) { \
-		return ui_add_text(parent, UI_ELEMENT_##capital, text); \
+		return ui_add_text(parent, UI_ELEMENT_##CAPITAL, text); \
 	}
 
-__UI_ADD_TEXT_FUNC(title,     TITLE)
-__UI_ADD_TEXT_FUNC(subtitle,  SUBTITLE)
-__UI_ADD_TEXT_FUNC(paragraph, PARAGRAPH)
-__UI_ADD_TEXT_FUNC(log,       LOG)
-__UI_ADD_TEXT_FUNC(button,    BUTTON)
+TEXT_FUNC(title,     TITLE)
+TEXT_FUNC(subtitle,  SUBTITLE)
+TEXT_FUNC(paragraph, PARAGRAPH)
+TEXT_FUNC(log,       LOG)
+TEXT_FUNC(button,    BUTTON)
 
 ui_element_t ui_add_radio(ui_element_t parent, unsigned default_selection, unsigned count, const char* entries[count]) {
 	return send_device(ui_device, 0x6165, (uint64_t[]) { parent, UI_ELEMENT_RADIO, default_selection, count, (uint64_t) entries });
 }
 
-__UI_ADD_TEXT_FUNC(entry, ENTRY)
+TEXT_FUNC(entry, ENTRY)
+
+#undef TEXT_FUNC
 
 // TODO goes for both SVG's and images, but make sure the UI device ends up freeing those objects to prevent memory leaks
 
