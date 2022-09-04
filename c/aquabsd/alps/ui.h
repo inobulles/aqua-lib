@@ -387,7 +387,7 @@ ui_element_t ui_add_image(ui_element_t parent, const char* drive, const char* pa
 	return _ui_add_image(parent, png, width, height);
 }
 
-// other element manipulation functions
+// element manipulation functions
 
 void ui_rem_element(ui_element_t element) {
 	send_device(ui_device, 0x7265, (uint64_t[]) { element });
@@ -419,12 +419,12 @@ void ui_set_section(ui_element_t section, unsigned scrollable, ui_value_t x, ui_
 	send_device(ui_device, 0x7364, (uint64_t[]) { section, scrollable, x.unit, *(uint64_t*) &x.val, y.unit, *(uint64_t*) &y.val });
 }
 
-void ui_set_radio(ui_element_t radio, unsigned default_selection, unsigned count, const char* entries[count]) {
-	send_device(ui_device, 0x7364, (uint64_t[]) { radio, default_selection, count, (uint64_t) entries });
-}
-
 void ui_set_text(ui_element_t text_element, const char* text) {
 	send_device(ui_device, 0x7364, (uint64_t[]) { text_element, (uint64_t) text });
+}
+
+void ui_set_radio(ui_element_t radio, unsigned default_selection, unsigned count, const char* entries[count]) {
+	send_device(ui_device, 0x7364, (uint64_t[]) { radio, default_selection, count, (uint64_t) entries });
 }
 
 void ui_set_svg(ui_element_t svg_element, const char* drive, const char* path, ui_value_t height) {

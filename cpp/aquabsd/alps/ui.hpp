@@ -86,11 +86,7 @@ namespace aqua::aquabsd::alps::ui {
 
 	public:
 
-		Element() {
-		}
-
-		~Element() {
-		}
+		// element manipulation methods
 
 		void rem(void) {
 			aqua_libc::ui_rem_element(element);
@@ -128,12 +124,23 @@ namespace aqua::aquabsd::alps::ui {
 		~Section() {
 			aqua_libc::ui_rem_element(element);
 		}
+
+		void set(bool scrollable, Val x, Val y) {
+			auto c_x = static_cast<aqua_libc::ui_value_t>(x);
+			auto c_y = static_cast<aqua_libc::ui_value_t>(y);
+
+			aqua_libc::ui_set_section(element, scrollable, c_x, c_y);
+		}
 	};
 
 	struct Text : Element {
 		Text(Element& parent, Element_type type, std::string text) {
 			auto c_type = static_cast<aqua_libc::ui_element_type_t>(type);
 			element = aqua_libc::ui_add_text(parent.element, c_type, text.c_str());
+		}
+
+		void set(std::string text) {
+			aqua_libc::ui_set_text(element, text.c_str());
 		}
 	};
 
@@ -162,6 +169,17 @@ namespace aqua::aquabsd::alps::ui {
 			}
 
 			element = aqua_libc::ui_add_radio(parent.element, default_selection, count, c_entries);
+		}
+
+		void set(unsigned default_selection, std::vector<std::string>& entries) {
+			size_t count = entries.size();
+			const char* c_entries[count];
+
+			for (size_t i = 0; i < count; i++) {
+				c_entries[i] = entries[i].c_str();
+			}
+
+			aqua_libc::ui_set_radio(element, default_selection, count, c_entries);
 		}
 	};
 
