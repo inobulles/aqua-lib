@@ -95,6 +95,14 @@ namespace aqua::aquabsd::alps::ui {
 		void rem(void) {
 			aqua_libc::ui_rem_element(element);
 		}
+
+		void move_before(Element& target) {
+			aqua_libc::ui_move_element_before(element, target.element);
+		}
+
+		void move_after(Element& target) {
+			aqua_libc::ui_move_element_after(element, target.element);
+		}
 	};
 
 	struct Section : Element {
