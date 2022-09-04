@@ -176,6 +176,16 @@ namespace aqua::aquabsd::alps::ui {
 
 			aqua_libc::ui_set_scroll(element, c_x, c_y);
 		}
+
+		// state functions
+
+		bool clicked(void) {
+			return aqua_libc::ui_clicked(element);
+		}
+
+		bool pressed(void) {
+			return aqua_libc::ui_pressed(element);
+		}
 	};
 
 	struct Section : Element {
