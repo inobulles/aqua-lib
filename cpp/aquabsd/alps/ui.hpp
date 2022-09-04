@@ -111,6 +111,10 @@ namespace aqua::aquabsd::alps::ui {
 		void move_tail(void) {
 			aqua_libc::ui_move_element_tail(element);
 		}
+
+		void clear_children(void) {
+			aqua_libc::ui_clear_children(element);
+		}
 	};
 
 	struct Section : Element {
