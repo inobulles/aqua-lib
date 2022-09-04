@@ -103,6 +103,14 @@ namespace aqua::aquabsd::alps::ui {
 		void move_after(Element& target) {
 			aqua_libc::ui_move_element_after(element, target.element);
 		}
+
+		void move_head(void) {
+			aqua_libc::ui_move_element_head(element);
+		}
+
+		void move_tail(void) {
+			aqua_libc::ui_move_element_tail(element);
+		}
 	};
 
 	struct Section : Element {
