@@ -128,6 +128,10 @@ namespace aqua::aquabsd::alps::ui {
 		void set_sticky(bool sticky) {
 			aqua_libc::ui_set_sticky(element, sticky);
 		}
+
+		void set_gobbler(bool gobbler) {
+			aqua_libc::ui_set_gobbler(element, gobbler);
+		}
 	};
 
 	struct Section : Element {
