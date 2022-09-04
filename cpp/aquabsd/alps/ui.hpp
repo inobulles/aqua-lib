@@ -132,6 +132,13 @@ namespace aqua::aquabsd::alps::ui {
 		void set_gobbler(bool gobbler) {
 			aqua_libc::ui_set_gobbler(element, gobbler);
 		}
+
+		void set_abs(bool abs, Val x, Val y) {
+			auto c_x = static_cast<aqua_libc::ui_value_t>(x);
+			auto c_y = static_cast<aqua_libc::ui_value_t>(y);
+
+			aqua_libc::ui_set_abs(element, abs, c_x, c_y);
+		}
 	};
 
 	struct Section : Element {
