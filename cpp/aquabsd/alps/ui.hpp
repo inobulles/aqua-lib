@@ -143,6 +143,14 @@ namespace aqua::aquabsd::alps::ui {
 		void set_anchor(float x, float y) {
 			aqua_libc::ui_set_anchor(element, x, y);
 		}
+
+		void set_prop(std::string name, uint64_t val) {
+			aqua_libc::ui_set_prop(element, name.c_str(), val);
+		}
+
+		void set_prop(std::string name, void* ptr) {
+			set_prop(name, reinterpret_cast<uint64_t>(ptr));
+		}
 	};
 
 	struct Section : Element {
