@@ -1,5 +1,7 @@
 #pragma once
 
+#include <root.hpp>
+
 namespace aqua_libc {
 	extern "C" {
 		#include <../c/core/fs.h>
