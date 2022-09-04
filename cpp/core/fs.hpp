@@ -50,11 +50,23 @@ namespace aqua::core::fs {
 		}
 
 		size_t size(void) {
-			return aqua_libc::fs_size(descr);
+			size_t size = aqua_libc::fs_size(descr);
+
+			if (size == aqua_libc::FS_ERR_GENERIC) {
+				throw Generic_error("Failed to get file size");
+			}
+
+			return size;
 		}
 
 		void* mmap(void) {
-			return aqua_libc::fs_mmap(descr);
+			void* mem = aqua_libc::fs_mmap(descr);
+
+			if (!mem) {
+				throw Generic_error("Failed to map file to memory");
+			}
+
+			return mem;
 		}
 
 		void read(void* buf, size_t len) {
