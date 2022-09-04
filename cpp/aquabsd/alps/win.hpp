@@ -36,10 +36,8 @@ namespace aqua::aquabsd::alps::win {
 		}
 	};
 
-	class Win {
+	struct Win {
 		aqua_libc::win_t* win;
-
-	public:
 
 		float x_pos, y_pos;
 		float width, height;

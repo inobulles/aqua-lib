@@ -302,5 +302,9 @@ namespace aqua::aquabsd::alps::ui {
 		void set_theme(std::string theme) {
 			aqua_libc::ui_set_theme(context, theme.c_str());
 		}
+
+		void set_base(std::string colour) {
+			aqua_libc::ui_set_base(context, colour.c_str());
+		}
 	};
 }
