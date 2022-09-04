@@ -124,6 +124,10 @@ namespace aqua::aquabsd::alps::ui {
 
 			aqua_libc::ui_set_windup(element, scale, c_x, c_y);
 		}
+
+		void set_sticky(bool sticky) {
+			aqua_libc::ui_set_sticky(element, sticky);
+		}
 	};
 
 	struct Section : Element {
