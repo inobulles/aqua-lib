@@ -60,6 +60,51 @@ namespace aqua::aquabsd::alps::ui {
 	const Corner CORNER_NONE = static_cast<Corner>(0);
 	const Corner CORNER_ALL = CORNER_TOP_LEFT | CORNER_TOP_RIGHT | CORNER_BOTTOM_LEFT | CORNER_BOTTOM_RIGHT;
 
+	struct Val {
+		Unit unit;
+		float val;
+
+		operator aqua_libc::ui_value_t() {
+			auto c_unit = static_cast<aqua_libc::ui_unit_t>(unit);
+			return { .unit = c_unit, .val = val };
+		}
+	};
+
+	// elements
+
+	class Element {
+	public: // XXX I don't understand why this can't be 'protected' but whatever
+
+		aqua_libc::ui_element_t element;
+
+	public:
+
+		Element() {
+		}
+	};
+
+	struct Section : Element {
+		Section(Element& parent, bool scrollable, Val& x, Val& y) {
+			auto c_x = static_cast<aqua_libc::ui_value_t>(x);
+			auto c_y = static_cast<aqua_libc::ui_value_t>(y);
+
+			element = aqua_libc::ui_add_section(parent.element, scrollable, c_x, c_y);
+		}
+
+		~Section() {
+			aqua_libc::ui_rem_element(element);
+		}
+	};
+
+	struct Text : Element {
+		Text(Element& parent, Element_type type, std::string text) {
+			auto c_type = static_cast<aqua_libc::ui_element_type_t>(type);
+			element = aqua_libc::ui_add_text(parent.element, c_type, text.c_str());
+		}
+	};
+
+	// context stuff
+
 	enum Display_type {
 		DISPLAY_NONE    = aqua_libc::UI_DISPLAY_NONE,
 		DISPLAY_VGA     = aqua_libc::UI_DISPLAY_VGA,
@@ -72,12 +117,14 @@ namespace aqua::aquabsd::alps::ui {
 
 	public:
 
+		Element root;
 		win::Win win;
 
 		Context(Display_type hint) {
 			auto c_hint = static_cast<aqua_libc::ui_display_type_t>(hint);
 			context = aqua_libc::ui_create(c_hint);
 
+			root.element = context->root;
 			win = win::Win(context->ogl.win);
 		}
 
