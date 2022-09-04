@@ -80,6 +80,8 @@ namespace aqua::aquabsd::alps::ui {
 	// elements
 
 	class Element {
+		bool removed;
+
 	public: // XXX I don't understand why this can't be 'protected' but whatever
 
 		aqua_libc::ui_element_t element;
@@ -87,6 +89,20 @@ namespace aqua::aquabsd::alps::ui {
 	public:
 
 		Element() {
+			removed = false;
+		}
+
+		~Element() {
+			rem();
+		}
+
+		void rem(void) {
+			if (removed) {
+				return;
+			}
+
+			aqua_libc::ui_rem_element(element);
+			removed = true;
 		}
 	};
 

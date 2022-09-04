@@ -362,7 +362,7 @@ ui_element_t ui_add_radio(ui_element_t parent, unsigned default_selection, unsig
 ui_element_t _ui_add_svg(ui_element_t parent, svg_t svg, ui_value_t height, unsigned themeable) {
 	// XXX this function should probably be avoided for now util I find (perhaps) a better solution if you can
 	//     for *most* use cases just 'ui_add_svg' should be sufficient
-	//     anyway, this function is a bit perculiar because the ui device frees 'svg', not the client
+	//     anyway, this function is a bit peculiar because the ui device frees 'svg', not the client
 
 	return send_device(ui_device, 0x6165, (uint64_t[]) { parent, UI_ELEMENT_SVG, svg, height.unit, *(uint64_t*) &height.val, themeable });
 }
