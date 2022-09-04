@@ -112,7 +112,7 @@ namespace aqua::aquabsd::alps::ui {
 			aqua_libc::ui_clear_children(element);
 		}
 
-		// element property setting functions
+		// element property setting methods
 
 		void set_visibility(bool visibility, float windup_dir) {
 			aqua_libc::ui_set_visibility(element, visibility, windup_dir);
@@ -177,7 +177,7 @@ namespace aqua::aquabsd::alps::ui {
 			aqua_libc::ui_set_scroll(element, c_x, c_y);
 		}
 
-		// state functions
+		// state methods
 
 		bool clicked(void) {
 			return aqua_libc::ui_clicked(element);
@@ -189,6 +189,12 @@ namespace aqua::aquabsd::alps::ui {
 
 		unsigned get_selection(void) {
 			return aqua_libc::ui_get_selection(element);
+		}
+
+		// misc methods
+
+		void snap(void) {
+			aqua_libc::ui_snap(element);
 		}
 	};
 
