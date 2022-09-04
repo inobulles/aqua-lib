@@ -64,6 +64,12 @@ namespace aqua::aquabsd::alps::ui {
 		Unit unit;
 		float val;
 
+		Val(Unit unit, float val) :
+			unit(unit),
+			val(val)
+		{
+		}
+
 		operator aqua_libc::ui_value_t() {
 			auto c_unit = static_cast<aqua_libc::ui_unit_t>(unit);
 			return { .unit = c_unit, .val = val };
@@ -84,7 +90,7 @@ namespace aqua::aquabsd::alps::ui {
 	};
 
 	struct Section : Element {
-		Section(Element& parent, bool scrollable, Val& x, Val& y) {
+		Section(Element& parent, bool scrollable, Val x, Val y) {
 			auto c_x = static_cast<aqua_libc::ui_value_t>(x);
 			auto c_y = static_cast<aqua_libc::ui_value_t>(y);
 
