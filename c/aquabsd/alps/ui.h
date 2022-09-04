@@ -1,16 +1,16 @@
 #if !defined(__AQUA_LIB__AQUABSD_ALPS_UI)
 #define __AQUA_LIB__AQUABSD_ALPS_UI
 
-#include <root.h>
+#include "../../root.h"
 
-#include <aquabsd/alps/svg.h>
-#include <aquabsd/alps/mouse.h>
-#include <aquabsd/alps/kbd.h>
+#include "../../aquabsd/alps/svg.h"
+#include "../../aquabsd/alps/mouse.h"
+#include "../../aquabsd/alps/kbd.h"
 
 // TODO find some way to create a generic image object between the library & devices
 //      see also ui_add_image, where png_load could be replaced by a generic img_load, which would use the correct format to load the image in question
 
-#include <aquabsd/alps/png.h>
+#include "../../aquabsd/alps/png.h"
 
 #if defined(__AQUA_LIB__AQUABSD_ALPS_VGA)
 	#define UI_VGA_SUPPORT
@@ -124,6 +124,8 @@ typedef struct {
 	kbd_t kbd;
 
 	union {
+		char __dummy; // dummy member in case union is empty
+
 #if defined(UI_VGA_SUPPORT)
 		struct {
 			int mode_count;
@@ -252,7 +254,7 @@ ui_context_t* ui_create(ui_display_type_t hint) {
 		ui_device = query_device("aquabsd.alps.ui");
 	}
 
-	ui_context_t* context = calloc(1, sizeof *context);
+	ui_context_t* context = (ui_context_t*) calloc(1, sizeof *context);
 
 	// find best display type to use following the 'hint' argument
 	// do this by attempting to setup each one and breaking (i.e. going to 'found') upon success

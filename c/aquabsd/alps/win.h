@@ -1,7 +1,7 @@
 #if !defined(__AQUA_LIB__AQUABSD_ALPS_WIN)
 #define __AQUA_LIB__AQUABSD_ALPS_WIN
 
-#include <root.h>
+#include "../../root.h"
 
 typedef enum {
 	WIN_CB_DRAW,
@@ -18,7 +18,7 @@ typedef struct {
 	float x_pos, y_pos;
 	float width, height;
 
-	unsigned x_res, y_res;
+	unsigned    x_res,    y_res;
 	unsigned wm_x_res, wm_y_res;
 
 	uint64_t win;
@@ -43,7 +43,7 @@ win_t* win_create(unsigned x_res, unsigned y_res) {
 		return NULL;
 	}
 
-	win_t* win = calloc(1, sizeof *win);
+	win_t* win = (win_t*) calloc(1, sizeof *win);
 
 	win->x_res = x_res;
 	win->y_res = y_res;
@@ -58,6 +58,11 @@ win_t* win_create(unsigned x_res, unsigned y_res) {
 	return win;
 }
 
+void win_delete(win_t* win) {
+	send_device(win_device, 0x6463, (uint64_t[]) { win->win });
+	free(win);
+}
+
 void win_set_caption(win_t* win, const char* caption) {
 	send_device(win_device, 0x7363, (uint64_t[]) { win->win, (uint64_t) caption });
 }
@@ -67,7 +72,7 @@ char* win_get_caption(win_t* win) {
 }
 
 win_state_t win_get_state(win_t* win) {
-	return send_device(win_device, 0x6773, (uint64_t[]) { win->win });
+	return (win_state_t) send_device(win_device, 0x6773, (uint64_t[]) { win->win });
 }
 
 int win_register_cb(win_t* win, win_cb_t type, int (*cb) (), void* param) {
@@ -107,18 +112,13 @@ void win_modify(win_t* win, float x, float y, unsigned x_res, unsigned y_res) {
 	send_device(win_device, 0x6D76, (uint64_t[]) { win->win, *(uint64_t*) &x, *(uint64_t*) &y, x_res, y_res });
 }
 
-void win_delete(win_t* win) {
-	send_device(win_device, 0x6463, (uint64_t[]) { win->win });
-	free(win);
-}
-
 // AQUA DWD protocol stuff
 
 void win_set_dwd_close_pos(win_t* win, float x, float y) {
 	send_device(win_device, 0x2D78, (uint64_t[]) { win->win, *(uint64_t*) &x, *(uint64_t*) &y });
 }
 
-unsigned win_supports_dwd(win_t* win) {
+bool win_supports_dwd(win_t* win) {
 	return send_device(win_device, 0x3D63, (uint64_t[]) { win->win });
 }
 

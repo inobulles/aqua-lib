@@ -1,7 +1,7 @@
 #if !defined(__AQUA_LIB__AQUABSD_ALPS_KBD)
 #define __AQUA_LIB__AQUABSD_ALPS_KBD
 
-#include <root.h>
+#include "../../root.h"
 #include <stdbool.h>
 
 // TODO error handling
@@ -30,7 +30,7 @@ unsigned kbd_buf_len(kbd_t kbd) {
 }
 
 char* kbd_get_buf(kbd_t kbd) {
-	return (void*) send_device(kbd_device, 0x7262, (uint64_t[]) { kbd });
+	return (char*) send_device(kbd_device, 0x7262, (uint64_t[]) { kbd });
 }
 
 unsigned kbd_keys_len(kbd_t kbd) {
@@ -38,7 +38,7 @@ unsigned kbd_keys_len(kbd_t kbd) {
 }
 
 const char** kbd_get_keys(kbd_t kbd) {
-	return (void*) send_device(kbd_device, 0x726B, (uint64_t[]) { kbd });
+	return (const char**) send_device(kbd_device, 0x726B, (uint64_t[]) { kbd });
 }
 
 // helper functions (which wrap regular device commands)
