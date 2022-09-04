@@ -151,6 +151,24 @@ namespace aqua::aquabsd::alps::ui {
 		void set_prop(std::string name, void* ptr) {
 			set_prop(name, reinterpret_cast<uint64_t>(ptr));
 		}
+
+		void set_margin(Val left, Val right, Val top, Val bottom) {
+			auto c_left   = static_cast<aqua_libc::ui_value_t>(left  );
+			auto c_right  = static_cast<aqua_libc::ui_value_t>(right );
+			auto c_top    = static_cast<aqua_libc::ui_value_t>(top   );
+			auto c_bottom = static_cast<aqua_libc::ui_value_t>(bottom);
+
+			aqua_libc::ui_set_margin(element, c_left, c_right, c_top, c_bottom);
+		}
+
+		void set_padding(Val left, Val right, Val top, Val bottom) {
+			auto c_left   = static_cast<aqua_libc::ui_value_t>(left  );
+			auto c_right  = static_cast<aqua_libc::ui_value_t>(right );
+			auto c_top    = static_cast<aqua_libc::ui_value_t>(top   );
+			auto c_bottom = static_cast<aqua_libc::ui_value_t>(bottom);
+
+			aqua_libc::ui_set_padding(element, c_left, c_right, c_top, c_bottom);
+		}
 	};
 
 	struct Section : Element {
