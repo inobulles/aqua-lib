@@ -186,6 +186,10 @@ namespace aqua::aquabsd::alps::ui {
 		bool pressed(void) {
 			return aqua_libc::ui_pressed(element);
 		}
+
+		unsigned get_selection(void) {
+			return aqua_libc::ui_get_selection(element);
+		}
 	};
 
 	struct Section : Element {
