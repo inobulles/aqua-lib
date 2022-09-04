@@ -7,6 +7,18 @@ namespace aqua_libc {
 }
 
 namespace aqua::core::fs {
+	enum Flags {
+		FLAGS_READ   = aqua_libc::FS_FLAGS_READ,
+		FLAGS_WRITE  = aqua_libc::FS_FLAGS_WRITE,
+		FLAGS_EXEC   = aqua_libc::FS_FLAGS_EXEC,
+		FLAGS_APPEND = aqua_libc::FS_FLAGS_APPEND,
+		FLAGS_CREATE = aqua_libc::FS_FLAGS_CREATE,
+	};
+
+	inline Flags operator |(Flags a, Flags b) {
+		return static_cast<Flags>(a | b);
+	}
+
 	class Generic_error : public std::exception {
 		std::string msg;
 
@@ -25,8 +37,8 @@ namespace aqua::core::fs {
 
 	public:
 
-		Descr(const std::string drive, const std::string path, aqua_libc::fs_flags_t flags) {
-			descr = aqua_libc::fs_open(drive.c_str(), path.c_str(), flags);
+		Descr(const std::string drive, const std::string path, Flags flags) {
+			descr = aqua_libc::fs_open(drive.c_str(), path.c_str(), static_cast<aqua_libc::fs_flags_t>(flags));
 
 			if (!descr) {
 				throw Generic_error("Failed to open '" + drive + ":" + path + "'");
