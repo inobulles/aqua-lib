@@ -72,9 +72,13 @@ namespace aqua::aquabsd::alps::ui {
 
 	public:
 
+		win::Win win;
+
 		Context(Display_type hint) {
 			auto c_hint = static_cast<aqua_libc::ui_display_type_t>(hint);
 			context = aqua_libc::ui_create(c_hint);
+
+			win = win::Win(context->ogl.win);
 		}
 
 		~Context() {
