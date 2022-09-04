@@ -288,7 +288,7 @@ namespace aqua::aquabsd::alps::ui {
 			context = aqua_libc::ui_create(c_hint);
 
 			root.element = context->root;
-			win = win::Win(context->ogl.win);
+			win.win = context->ogl.win;
 		}
 
 		~Context() {
@@ -297,6 +297,10 @@ namespace aqua::aquabsd::alps::ui {
 
 		void render(float delta) {
 			aqua_libc::ui_render(context, delta);
+		}
+
+		void set_theme(std::string theme) {
+			aqua_libc::ui_set_theme(context, theme.c_str());
 		}
 	};
 }
