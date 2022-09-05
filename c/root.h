@@ -1,8 +1,9 @@
 #if !defined(__AQUA_LIB__ROOT)
 #define __AQUA_LIB__ROOT
 
-#include <stdio.h>
+#include <stdbool.h>
 #include <stdint.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
