@@ -1,8 +1,9 @@
 #if !defined(__AQUA_LIB__ROOT)
 #define __AQUA_LIB__ROOT
 
-#include <stdio.h>
+#include <stdbool.h>
 #include <stdint.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -28,7 +29,7 @@ device_t query_device(const char* name) {
 		must_run_with_aqua_kos();
 		return -1;
 	}
-	
+
 	return kos_query_device(0, (uint64_t) name);
 }
 
