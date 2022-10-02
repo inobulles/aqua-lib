@@ -132,4 +132,10 @@ float win_get_dwd_close_pos_y(win_t* win) {
 	return *(float*) &y;
 }
 
+// framebuffer stuff
+
+void* win_get_fb(win_t* win, uint8_t bpp) {
+	return (void*) send_device(win_device, 0x6662, (uint64_t[]) { win->win, bpp });
+}
+
 #endif
