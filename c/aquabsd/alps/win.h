@@ -100,7 +100,7 @@ void win_close(win_t* win) {
 }
 
 void win_grab_focus(win_t* win) {
-	send_device(win_device, 0x6667, (uint64_t[]) { win->win });
+	send_device(win_device, 0x6766, (uint64_t[]) { win->win });
 }
 
 void win_modify(win_t* win, float x, float y, unsigned x_res, unsigned y_res) {
