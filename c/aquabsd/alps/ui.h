@@ -30,26 +30,6 @@
 
 // TODO error handling
 
-// XXX for easily converting old unit macros to the new ones
-// !!! THIS ONLY WORKS ON BSD DUE TO SYNTAX OF THE SED COMMAND !!!
-
-// find -L . -name "*.[ch]" -exec sed -i '' 's/UNIT_ROOT_WIDTH_FRACTION/UNIT_RWF/g' {} +
-// find -L . -name "*.[ch]" -exec sed -i '' 's/UNIT_ROOT_HEIGHT_FRACTION/UNIT_RHF/g' {} +
-
-// find -L . -name "*.[ch]" -exec sed -i '' 's/UNIT_WIDTH_FRACTION/UNIT_WF/g' {} +
-// find -L . -name "*.[ch]" -exec sed -i '' 's/UNIT_HEIGHT_FRACTION/UNIT_HF/g' {} +
-
-// find -L . -name "*.[ch]" -exec sed -i '' 's/UNIT_FULL_WIDTH_FRACTION/UNIT_FWF/g' {} +
-// find -L . -name "*.[ch]" -exec sed -i '' 's/UNIT_FULL_HEIGHT_FRACTION/UNIT_FHF/g' {} +
-
-// find -L . -name "*.[ch]" -exec sed -i '' 's/UNIT_POINTS_X/UNIT_VX/g' {} +
-// find -L . -name "*.[ch]" -exec sed -i '' 's/UNIT_POINTS_Y/UNIT_VY/g' {} +
-
-// find -L . -name "*.[ch]" -exec sed -i '' 's/UNIT_PIXELS_X/UNIT_PX/g' {} +
-// find -L . -name "*.[ch]" -exec sed -i '' 's/UNIT_PIXELS_Y/UNIT_PY/g' {} +
-
-// find -L . -name "*.[ch]" -exec sed -i '' 's/UNIT_MILLIMETRES/UNIT_MM/g' {} +
-
 typedef enum {
 	UI_ELEMENT_ROOT = 0,
 	UI_ELEMENT_SECTION,
@@ -85,9 +65,6 @@ typedef struct {
 #define UI_VALUE(_unit, _val) ((ui_value_t) { .unit = (_unit), .val = (_val) })
 #define UI_ZERO (UI_VALUE(0, 0))
 #define UI_AUTO (UI_VALUE(UI_UNIT_AUTO, 0))
-
-// XXX for easily converting from old values to new ones
-// find -L . -name "*.[ch]" -exec sed -i '' 's/,\ f,\ /,\ /g' {} +
 
 typedef enum {
 	UI_CORNER_TOP_LEFT     = 0b0001,
