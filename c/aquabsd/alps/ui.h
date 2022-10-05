@@ -12,43 +12,31 @@
 
 #include "../../aquabsd/alps/png.h"
 
-#if defined(__AQUA_LIB__AQUABSD_ALPS_VGA)
-	#define UI_VGA_SUPPORT
+// support macros
+
+#if defined(__AQUA_LIB__AQUABSD_ALPS_WIN)
+	#define UI_WIN_SUPPORT
 #endif
 
-#if defined(__AQUA_LIB__AQUABSD_ALPS_WIN) && defined(__AQUA_LIB__OGL_OGL)
-	#define UI_OGL_WIN_SUPPORT
+#if defined(__AQUA_LIB__AQUABSD_ALPS_WM)
+	#define UI_WM_SUPPORT
 #endif
 
-#if defined(__AQUA_LIB__AQUABSD_ALPS_WM) && defined(__AQUA_LIB__OGL_OGL)
-	#define UI_OGL_WM_SUPPORT
-#endif
-
-#if defined(UI_OGL_WIN_SUPPORT) || defined(UI_OGL_WM_SUPPORT)
+#if defined(__AQUA_LIB__OGL_OGL)
 	#define UI_OGL_SUPPORT
 #endif
 
+// compound support macros
+
+#if defined(UI_WIN_SUPPORT) && defined(UI_OGL_SUPPORT)
+	#define UI_OGL_WIN_SUPPORT
+#endif
+
+#if defined(UI_WM_SUPPORT) && defined(UI_OGL_SUPPORT)
+	#define UI_OGL_WM_SUPPORT
+#endif
+
 // TODO error handling
-
-// XXX for easily converting old unit macros to the new ones
-// !!! THIS ONLY WORKS ON BSD DUE TO SYNTAX OF THE SED COMMAND !!!
-
-// find -L . -name "*.[ch]" -exec sed -i '' 's/UNIT_ROOT_WIDTH_FRACTION/UNIT_RWF/g' {} +
-// find -L . -name "*.[ch]" -exec sed -i '' 's/UNIT_ROOT_HEIGHT_FRACTION/UNIT_RHF/g' {} +
-
-// find -L . -name "*.[ch]" -exec sed -i '' 's/UNIT_WIDTH_FRACTION/UNIT_WF/g' {} +
-// find -L . -name "*.[ch]" -exec sed -i '' 's/UNIT_HEIGHT_FRACTION/UNIT_HF/g' {} +
-
-// find -L . -name "*.[ch]" -exec sed -i '' 's/UNIT_FULL_WIDTH_FRACTION/UNIT_FWF/g' {} +
-// find -L . -name "*.[ch]" -exec sed -i '' 's/UNIT_FULL_HEIGHT_FRACTION/UNIT_FHF/g' {} +
-
-// find -L . -name "*.[ch]" -exec sed -i '' 's/UNIT_POINTS_X/UNIT_VX/g' {} +
-// find -L . -name "*.[ch]" -exec sed -i '' 's/UNIT_POINTS_Y/UNIT_VY/g' {} +
-
-// find -L . -name "*.[ch]" -exec sed -i '' 's/UNIT_PIXELS_X/UNIT_PX/g' {} +
-// find -L . -name "*.[ch]" -exec sed -i '' 's/UNIT_PIXELS_Y/UNIT_PY/g' {} +
-
-// find -L . -name "*.[ch]" -exec sed -i '' 's/UNIT_MILLIMETRES/UNIT_MM/g' {} +
 
 typedef enum {
 	UI_ELEMENT_ROOT = 0,
@@ -86,9 +74,6 @@ typedef struct {
 #define UI_ZERO (UI_VALUE(0, 0))
 #define UI_AUTO (UI_VALUE(UI_UNIT_AUTO, 0))
 
-// XXX for easily converting from old values to new ones
-// find -L . -name "*.[ch]" -exec sed -i '' 's/,\ f,\ /,\ /g' {} +
-
 typedef enum {
 	UI_CORNER_TOP_LEFT     = 0b0001,
 	UI_CORNER_TOP_RIGHT    = 0b0010,
@@ -109,7 +94,7 @@ typedef uint64_t ui_element_t;
 
 typedef enum {
 	UI_DISPLAY_NONE,
-	UI_DISPLAY_VGA,
+	UI_DISPLAY_FB_WIN,
 	UI_DISPLAY_OGL_WIN,
 	UI_DISPLAY_OGL_WM,
 } ui_display_type_t;
@@ -123,35 +108,20 @@ typedef struct {
 	mouse_t mouse;
 	kbd_t kbd;
 
-	union {
-		char __dummy; // dummy member in case union is empty
+	void* fb;
 
-#if defined(UI_VGA_SUPPORT)
-		struct {
-			int mode_count;
-			vga_mode_t* modes;
+#if defined(UI_WIN_SUPPORT)
+	win_t* win;
+#endif
 
-			vga_mode_t* mode;
-			uint8_t* framebuffer;
-		} vga;
+#if defined(UI_WM_SUPPORT)
+	wm_t wm;
 #endif
 
 #if defined(UI_OGL_SUPPORT)
-		struct {
-			ogl_context_t* context;
-
-			// these members can all be found within 'context' ('ogl_context_t')
-			// they're just here to make accessing them a bit easier
-
-			win_t* win;
-			gl_funcs_t* gl;
-
-#if defined(UI_OGL_WM_SUPPORT)
-			wm_t wm;
+	ogl_context_t* ogl_context;
+	gl_funcs_t* gl; // this can be found in 'context' ('ogl_context_t'); it's just here to make accessing it easier
 #endif
-		} ogl;
-#endif
-	};
 } ui_context_t;
 
 static device_t ui_device = -1;
@@ -162,57 +132,36 @@ static device_t ui_device = -1;
 
 typedef int (*ui_setup_func_t) (ui_context_t* context);
 
-static int ui_setup_vga(ui_context_t* context) {
-#if defined(UI_VGA_SUPPORT)
-	context->type = UI_DISPLAY_VGA;
+static int ui_setup_fb_win(ui_context_t* context) {
+#if defined(UI_WIN_SUPPORT)
+	context->type = UI_DISPLAY_FB_WIN;
 
-	if (vga_init() < 0) {
-		return -1;
-	}
+	uint32_t const x_res = 800;
+	uint32_t const y_res = 600;
 
-	context->vga.mode_count = vga_get_mode_count();
-	context->vga.modes = vga_get_modes();
+	uint8_t const bpp = 32;
 
-	if (!context->vga.mode_count || !context->vga.modes) {
-		return -1;
-	}
+	context->win = win_create(x_res, y_res);
+	context->fb = win_get_fb(context->win, bpp);
 
-	// look for a mode which is 800x600x32
-
-	for (int i = 0; i < context->vga.mode_count; i++) {
-		context->vga.mode = &context->vga.modes[i];
-
-		// TODO for some reason, 800x600x32 doesn't work on FreeBSD (sc)
-
-		if (context->vga.mode->width == 1024 && context->vga.mode->height == 768 && context->vga.mode->bpp == 32) {
-			break;
-		}
-	}
-
-	if (vga_set_mode(context->vga.mode) < 0) {
-		return -1;
-	}
-
-	context->vga.framebuffer = vga_get_framebuffer();
-	context->context = send_device(ui_device, 0x6366, (uint64_t[]) { (uint64_t) context->vga.framebuffer, context->vga.mode->width, context->vga.mode->height, context->vga.mode->bpp });
-
+	context->context = send_device(ui_device, 0x6366, (uint64_t[]) { (uint64_t) context->fb, x_res, y_res, bpp });
 	return UI_VALIDATE_SETUP_FUNC(context->context);
 #else
-	fprintf(stderr, "[UI lib] VGA contexts require 'aquabsd/alps/vga.h' to be included to function\n");
+	fprintf(stderr, "[UI lib] Framebuffer contexts require 'aquabsd/alps/win.h' to be included to function\n");
 	return -1;
 #endif
 }
 
 #if defined(UI_OGL_SUPPORT)
 static int ui_setup_ogl(ui_context_t* context) { // generic function used by 'ui_setup_ogl_win' & 'ui_setup_ogl_wm'
-	if (!context->ogl.context) {
+	if (!context->ogl_context) {
 		return -1;
 	}
 
-	context->ogl.win = context->ogl.context->target.win;
-	context->ogl.gl = &context->ogl.context->gl;
+	context->win = context->ogl_context->target.win;
+	context->gl = &context->ogl_context->gl;
 
-	context->context = send_device(ui_device, 0x6367, (uint64_t[]) { (uint64_t) context->ogl.context->context });
+	context->context = send_device(ui_device, 0x6367, (uint64_t[]) { (uint64_t) context->ogl_context->context });
 	return UI_VALIDATE_SETUP_FUNC(context->context);
 }
 #endif
@@ -221,7 +170,7 @@ static int ui_setup_ogl_win(ui_context_t* context) {
 #if defined(UI_OGL_WIN_SUPPORT)
 	context->type = UI_DISPLAY_OGL_WIN;
 
-	context->ogl.context = ogl_create_win_context(800, 600);
+	context->ogl_context = ogl_create_win_context(800, 600);
 	return ui_setup_ogl(context);
 #else
 	fprintf(stderr, "[UI lib] OGL_WIN contexts require 'aquabsd/alps/win.h' & 'ogl/ogl.h' to be included in that order to function\n");
@@ -233,10 +182,10 @@ static int ui_setup_ogl_wm(ui_context_t* context) {
 #if defined(UI_OGL_WM_SUPPORT)
 	context->type = UI_DISPLAY_OGL_WM;
 
-	context->ogl.context = ogl_create_wm_context();
+	context->ogl_context = ogl_create_wm_context();
 
-	if (context->ogl.context) {
-		context->ogl.wm = context->ogl.context->target.wm;
+	if (context->ogl_context) {
+		context->wm = context->ogl_context->target.wm;
 	}
 
 	return ui_setup_ogl(context);
@@ -262,19 +211,19 @@ ui_context_t* ui_create(ui_display_type_t hint) {
 	int setup_func_count = 0;
 	ui_setup_func_t* setup_funcs;
 
-	if (hint == UI_DISPLAY_VGA) {
+	if (hint == UI_DISPLAY_FB_WIN) {
 		setup_func_count = 1;
-		setup_funcs = (ui_setup_func_t[]) { ui_setup_vga };
+		setup_funcs = (ui_setup_func_t[]) { ui_setup_fb_win };
 	}
 
 	else if (hint == UI_DISPLAY_OGL_WIN) {
 		setup_func_count = 2;
-		setup_funcs = (ui_setup_func_t[]) { ui_setup_ogl_win, ui_setup_vga };
+		setup_funcs = (ui_setup_func_t[]) { ui_setup_ogl_win, ui_setup_fb_win };
 	}
 
 	else if (hint == UI_DISPLAY_OGL_WM) {
 		setup_func_count = 3;
-		setup_funcs = (ui_setup_func_t[]) { ui_setup_ogl_wm, ui_setup_ogl_win, ui_setup_vga };
+		setup_funcs = (ui_setup_func_t[]) { ui_setup_ogl_wm, ui_setup_ogl_win, ui_setup_fb_win };
 	}
 
 	for (int i = 0; i < setup_func_count; i++) {
@@ -314,15 +263,15 @@ void ui_free(ui_context_t* context) {
 	send_device(ui_device, 0x6663, (uint64_t[]) { context->context });
 	free(context);
 
-#if defined(UI_VGA_SUPPORT)
-	if (context->type == UI_DISPLAY_VGA) {
-		vga_reset();
+#if defined(UI_WIN_SUPPORT)
+	if (context->type == UI_DISPLAY_FB_WIN) {
+		win_delete(context->win);
 	} else
 #endif
 
 #if defined(UI_OGL_SUPPORT)
 	if (context->type == UI_DISPLAY_OGL_WIN || context->type == UI_DISPLAY_OGL_WM) {
-		ogl_delete_context(context->ogl.context);
+		ogl_delete_context(context->ogl_context);
 	} else
 #endif
 

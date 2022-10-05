@@ -105,7 +105,7 @@ void win_close(win_t* win) {
 }
 
 void win_grab_focus(win_t* win) {
-	send_device(win_device, 0x6667, (uint64_t[]) { win->win });
+	send_device(win_device, 0x6766, (uint64_t[]) { win->win });
 }
 
 void win_modify(win_t* win, float x, float y, unsigned x_res, unsigned y_res) {
@@ -130,6 +130,12 @@ float win_get_dwd_close_pos_x(win_t* win) {
 float win_get_dwd_close_pos_y(win_t* win) {
 	uint64_t y = send_device(win_device, 0x3D79, (uint64_t[]) { win->win });
 	return *(float*) &y;
+}
+
+// framebuffer stuff
+
+void* win_get_fb(win_t* win, uint8_t bpp) {
+	return (void*) send_device(win_device, 0x6662, (uint64_t[]) { win->win, bpp });
 }
 
 #endif
