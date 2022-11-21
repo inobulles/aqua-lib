@@ -103,6 +103,10 @@ void win_grab_focus(win_t* win) {
 	send_device(win_device, 0x6766, (uint64_t[]) { win->win });
 }
 
+void win_exclusive(win_t* win, bool exclusive) {
+	send_device(win_device, 0x6578, (uint64_t[]) { win->win, exclusive });
+}
+
 void win_modify(win_t* win, float x, float y, unsigned x_res, unsigned y_res) {
 	send_device(win_device, 0x6D76, (uint64_t[]) { win->win, *(uint64_t*) &x, *(uint64_t*) &y, x_res, y_res });
 }
