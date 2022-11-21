@@ -4,7 +4,7 @@
 #include <aquabsd/alps/win.h>
 
 // note on WM_CB_CLICK: this callback is intended as a way to tell the WM device that a certain click was intended for the WM and not a client, based on its coordinates
-// this is *not* a way for the the WM to detect mouse presses and do event processing;
+// this is *not* a way for the WM to detect mouse presses and do event processing;
 // you should use the mouse device for that instead
 
 typedef enum {
@@ -49,25 +49,32 @@ void wm_delete(wm_t wm) {
 	send_device(wm_device, 0x6477, (uint64_t[]) { wm });
 }
 
+uint64_t wm_get_win(wm_t wm) {
+	return send_device(wm_device, 0x7277, (uint64_t[]) { wm });
+}
+
+// TODO are these commands really necessary, seeing as we can use aquabsd.alps.win commands on the root window to do the same?
+
+uint64_t wm_get_x_res(wm_t wm) {
+	return send_device(wm_device, 0x7872, (uint64_t[]) { wm });
+}
+
+uint64_t wm_get_y_res(wm_t wm) {
+	return send_device(wm_device, 0x7972, (uint64_t[]) { wm });
+}
+
 win_t* wm_get_root(wm_t wm) {
 	if (win_init() < 0) {
 		return NULL;
 	}
 
-	// get root window information
-
-	uint64_t _win = send_device(wm_device, 0x7277, (uint64_t[]) { wm });
-
-	uint64_t x_res = send_device(wm_device, 0x7872, (uint64_t[]) { wm });
-	uint64_t y_res = send_device(wm_device, 0x7972, (uint64_t[]) { wm });
-
 	// create window object
 
 	win_t* win = calloc(1, sizeof *win);
-	win->win = _win;
+	win->win = wm_get_win(wm);
 
-	win->x_res = x_res;
-	win->y_res = y_res;
+	win->x_res = wm_get_x_res(wm);
+	win->y_res = wm_get_y_res(wm);
 
 	return win;
 }
