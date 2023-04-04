@@ -1,7 +1,7 @@
 #if !defined(__AQUA_LIB__AQUABSD_ALPS_MOUSE)
 #define __AQUA_LIB__AQUABSD_ALPS_MOUSE
 
-#include <root.h>
+#include "../../root.h"
 
 // TODO error handling
 

@@ -1,21 +1,21 @@
 #if !defined(__AQUA_LIB__OGL_OGL)
 #define __AQUA_LIB__OGL_OGL
 
-#include <root.h>
+#include "../root.h"
 
 #include "gl/gl.h"
 
 typedef enum {
 	OGL_CONTEXT_TARGET_WIN,
 	OGL_CONTEXT_TARGET_WM,
-	OGL_CONTEXT_TARGET_LEN
+	OGL_CONTEXT_TARGET_LEN,
 } ogl_context_target_t;
 
 // this is the enum used to communicate with the device
 
 typedef enum {
 	OGL_CONTEXT_INTERNAL_TARGET_WIN,
-	OGL_CONTEXT_INTERNAL_TARGET_LEN
+	OGL_CONTEXT_INTERNAL_TARGET_LEN,
 } ogl_context_internal_target_t;
 
 typedef struct {
@@ -42,7 +42,7 @@ static void ogl_func_not_loaded(void) {
 
 static void ogl_clear_funcs(ogl_context_t* context) {
 	for (int i = 0; i < sizeof(context->gl) / sizeof(context->gl.Accum); i++) {
-		((void**) &context->gl)[i] = ogl_func_not_loaded;
+		((void**) &context->gl)[i] = (void*) ogl_func_not_loaded;
 	}
 }
 
@@ -84,7 +84,7 @@ ogl_context_t* ogl_create_win_context(unsigned x_res, unsigned y_res) {
 		return NULL;
 	}
 
-	ogl_context_t* context = calloc(1, sizeof *context);
+	ogl_context_t* context = (ogl_context_t*) calloc(1, sizeof *context);
 	context->target_type = OGL_CONTEXT_TARGET_WIN;
 
 	if (ogl_create_internal_win_context(context, win) < 0) {
@@ -117,13 +117,13 @@ ogl_context_t* ogl_create_wm_context(void) {
 	context->target_type = OGL_CONTEXT_TARGET_WM;
 
 	context->target.wm = wm;
-	
+
 	if (ogl_create_internal_win_context(context, wm_get_root(wm)) < 0) {
 		return NULL;
 	}
-	
+
 	ogl_clear_funcs(context);
-	
+
 	return context;
 }
 #endif

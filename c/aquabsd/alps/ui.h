@@ -1,16 +1,16 @@
 #if !defined(__AQUA_LIB__AQUABSD_ALPS_UI)
 #define __AQUA_LIB__AQUABSD_ALPS_UI
 
-#include <root.h>
+#include "../../root.h"
 
-#include <aquabsd/alps/svg.h>
-#include <aquabsd/alps/mouse.h>
-#include <aquabsd/alps/kbd.h>
+#include "../../aquabsd/alps/svg.h"
+#include "../../aquabsd/alps/mouse.h"
+#include "../../aquabsd/alps/kbd.h"
 
 // TODO find some way to create a generic image object between the library & devices
 //      see also ui_add_image, where png_load could be replaced by a generic img_load, which would use the correct format to load the image in question
 
-#include <aquabsd/alps/png.h>
+#include "../../aquabsd/alps/png.h"
 
 // support macros
 
@@ -203,7 +203,7 @@ ui_context_t* ui_create(ui_display_type_t hint) {
 		ui_device = query_device("aquabsd.alps.ui");
 	}
 
-	ui_context_t* context = calloc(1, sizeof *context);
+	ui_context_t* context = (ui_context_t*) calloc(1, sizeof *context);
 
 	// find best display type to use following the 'hint' argument
 	// do this by attempting to setup each one and breaking (i.e. going to 'found') upon success
@@ -288,22 +288,23 @@ ui_element_t ui_add_text(ui_element_t parent, ui_element_type_t type, const char
 	return send_device(ui_device, 0x6165, (uint64_t[]) { parent, type, (uint64_t) text });
 }
 
-#define __UI_ADD_TEXT_FUNC(name, capital) \
+#define TEXT_FUNC(name, CAPITAL) \
 	ui_element_t ui_add_##name(ui_element_t parent, const char* text) { \
-		return ui_add_text(parent, UI_ELEMENT_##capital, text); \
+		return ui_add_text(parent, UI_ELEMENT_##CAPITAL, text); \
 	}
 
-__UI_ADD_TEXT_FUNC(title,     TITLE)
-__UI_ADD_TEXT_FUNC(subtitle,  SUBTITLE)
-__UI_ADD_TEXT_FUNC(paragraph, PARAGRAPH)
-__UI_ADD_TEXT_FUNC(log,       LOG)
-__UI_ADD_TEXT_FUNC(button,    BUTTON)
+TEXT_FUNC(title,     TITLE)
+TEXT_FUNC(subtitle,  SUBTITLE)
+TEXT_FUNC(paragraph, PARAGRAPH)
+TEXT_FUNC(log,       LOG)
+TEXT_FUNC(button,    BUTTON)
+TEXT_FUNC(entry,     ENTRY)
+
+#undef TEXT_FUNC
 
 ui_element_t ui_add_radio(ui_element_t parent, unsigned default_selection, unsigned count, const char* entries[count]) {
 	return send_device(ui_device, 0x6165, (uint64_t[]) { parent, UI_ELEMENT_RADIO, default_selection, count, (uint64_t) entries });
 }
-
-__UI_ADD_TEXT_FUNC(entry, ENTRY)
 
 // TODO goes for both SVG's and images, but make sure the UI device ends up freeing those objects to prevent memory leaks
 
@@ -335,7 +336,7 @@ ui_element_t ui_add_image(ui_element_t parent, const char* drive, const char* pa
 	return _ui_add_image(parent, png, width, height);
 }
 
-// other element manipulation functions
+// element manipulation functions
 
 void ui_rem_element(ui_element_t element) {
 	send_device(ui_device, 0x7265, (uint64_t[]) { element });
@@ -367,12 +368,12 @@ void ui_set_section(ui_element_t section, unsigned scrollable, ui_value_t x, ui_
 	send_device(ui_device, 0x7364, (uint64_t[]) { section, scrollable, x.unit, *(uint64_t*) &x.val, y.unit, *(uint64_t*) &y.val });
 }
 
-void ui_set_radio(ui_element_t radio, unsigned default_selection, unsigned count, const char* entries[count]) {
-	send_device(ui_device, 0x7364, (uint64_t[]) { radio, default_selection, count, (uint64_t) entries });
-}
-
 void ui_set_text(ui_element_t text_element, const char* text) {
 	send_device(ui_device, 0x7364, (uint64_t[]) { text_element, (uint64_t) text });
+}
+
+void ui_set_radio(ui_element_t radio, unsigned default_selection, unsigned count, const char* entries[count]) {
+	send_device(ui_device, 0x7364, (uint64_t[]) { radio, default_selection, count, (uint64_t) entries });
 }
 
 void ui_set_svg(ui_element_t svg_element, const char* drive, const char* path, ui_value_t height) {

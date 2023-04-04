@@ -1,8 +1,8 @@
 #if !defined(__AQUA_LIB__AQUABSD_ALPS_PNG)
 #define __AQUA_LIB__AQUABSD_ALPS_PNG
 
-#include <root.h>
-#include <core/fs.h>
+#include "../../root.h"
+#include "../../core/fs.h"
 
 // TODO error handling
 

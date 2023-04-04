@@ -1,8 +1,8 @@
 #if !defined(__AQUA_LIB__AQUABSD_ALPS_SVG)
 #define __AQUA_LIB__AQUABSD_ALPS_SVG
 
-#include <root.h>
-#include <core/fs.h>
+#include "../../root.h"
+#include "../../core/fs.h"
 
 static device_t svg_device = -1;
 typedef uint64_t svg_t;
