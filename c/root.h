@@ -1,6 +1,12 @@
 #if !defined(__AQUA_LIB__ROOT)
 #define __AQUA_LIB__ROOT
 
+#define __STDC_WANT_LIB_EXT2__ 1 // ISO/IEC TR 24731-2:2010 standard library extensions
+
+#if defined(__linux__)
+	#define _GNU_SOURCE // cf. 'feature_test_macros(7)'
+#endif
+
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>

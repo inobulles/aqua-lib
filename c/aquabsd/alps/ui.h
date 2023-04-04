@@ -395,6 +395,10 @@ void ui_set_grid(ui_element_t section, unsigned grid_x, unsigned grid_y) {
 	send_device(ui_device, 0x7367, (uint64_t[]) { section, grid_x, grid_y });
 }
 
+void ui_set_layout(ui_element_t element, char const* name) {
+	send_device(ui_device, 0x6C79, (uint64_t[]) { element, (uint64_t) name });
+}
+
 void ui_set_sticky(ui_element_t element, unsigned sticky) {
 	send_device(ui_device, 0x7373, (uint64_t[]) { element, sticky });
 }
