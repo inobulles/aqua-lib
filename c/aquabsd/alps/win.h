@@ -27,11 +27,11 @@ typedef struct {
 static device_t win_device = -1;
 
 int win_init(void) {
-	if (win_device == -1) {
+	if (win_device == (device_t) -1) {
 		win_device = query_device("aquabsd.alps.win");
 	}
 
-	if (win_device == -1) {
+	if (win_device == (device_t) -1) {
 		return -1; // failed to query device
 	}
 
